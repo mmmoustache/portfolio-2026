@@ -5,6 +5,7 @@ import MainNavigation from '@/components/MainNavigation.astro';
 import Footer from '@/components/Footer.astro';
 
 import data from '@/data/navigation.json';
+import ScrollProvider from '@/components/ScrollProvider.astro';
 ---
 
 <!doctype html>
@@ -26,6 +27,7 @@ import data from '@/data/navigation.json';
     <MainNavigation items={data.main} />
     <main id="content">
       <slot />
+      <ScrollProvider />
     </main>
     <Footer items={data.main} />
   </body>

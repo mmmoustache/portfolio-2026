@@ -1,0 +1,152 @@
+---
+export type RevealZoomClipProps = {
+  initialInsetPct?: number;
+  initialScale?: number;
+  ease?: number;
+  class?: string;
+};
+
+const {
+  initialInsetPct = 30,
+  initialScale = 1.15,
+  ease = 0.12,
+  class: className = '',
+} = Astro.props;
+---
+
+<figure
+  class={`reveal-zoom ${className}`}
+  data-reveal-zoom
+  data-initial-inset={initialInsetPct}
+  data-initial-scale={initialScale}
+  data-ease={ease}
+>
+  <div class="reveal-zoom__inner" style={`--inset: ${initialInsetPct}%; --scale: ${initialScale};`}>
+    <slot />
+  </div>
+
+  <noscript>
+    <style>
+      .reveal-zoom__inner {
+        clip-path: none !important;
+        transform: none !important;
+      }
+    </style>
+  </noscript>
+</figure>
+
+<style>
+  .reveal-zoom {
+    width: 100%;
+  }
+
+  .reveal-zoom__inner {
+    width: 100%;
+    height: auto;
+    clip-path: inset(var(--inset) var(--inset) var(--inset) var(--inset));
+    overflow: hidden;
+    will-change: clip-path, transform;
+    transform: scale(var(--scale));
+    transform-origin: center center;
+  }
+
+  .reveal-zoom :global(img),
+  .reveal-zoom :global(video) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-zoom__inner {
+      clip-path: none !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (reduceMotion) return;
+
+    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+
+    const els = document.querySelectorAll('[data-reveal-zoom]');
+    els.forEach((figure) => {
+      if (!(figure instanceof HTMLElement)) return;
+      if (figure.dataset.rzInit === 'true') return;
+      figure.dataset.rzInit = 'true';
+
+      const inner = figure.querySelector('.reveal-zoom__inner');
+      if (!(inner instanceof HTMLElement)) return;
+
+      const initialInset = Number(figure.getAttribute('data-initial-inset') || '30');
+      const initialScale = Number(figure.getAttribute('data-initial-scale') || '1.15');
+      const easeAttr = Number(figure.getAttribute('data-ease') || '0.12');
+      const ease = clamp(easeAttr, 0.02, 0.25);
+
+      let currentInset = initialInset;
+      let targetInset = initialInset;
+
+      let currentScale = initialScale;
+      let targetScale = initialScale;
+
+      let raf = 0;
+      let ticking = false;
+
+      function computeProgress() {
+        const rect = figure.getBoundingClientRect();
+        const vh = window.innerHeight || 0;
+        const denom = vh + rect.height || 1;
+        const raw = (vh - rect.top) / denom;
+        return clamp(raw, 0, 1);
+      }
+
+      function updateTarget() {
+        const p = computeProgress();
+        targetInset = initialInset * (1 - p);
+        targetScale = initialScale - (initialScale - 1) * p;
+      }
+
+      function apply() {
+        currentInset = currentInset + (targetInset - currentInset) * ease;
+        currentScale = currentScale + (targetScale - currentScale) * ease;
+
+        if (Math.abs(currentInset - targetInset) < 0.03) currentInset = targetInset;
+        if (Math.abs(currentScale - targetScale) < 0.002) currentScale = targetScale;
+
+        inner.style.setProperty('--inset', currentInset.toFixed(3) + '%');
+        inner.style.setProperty('--scale', currentScale.toFixed(4));
+
+        ticking = false;
+        raf = 0;
+      }
+
+      function requestTick() {
+        if (ticking) return;
+        ticking = true;
+        raf = requestAnimationFrame(apply);
+      }
+
+      function onScrollOrResize() {
+        updateTarget();
+        requestTick();
+      }
+
+      window.addEventListener('scroll', onScrollOrResize, { passive: true });
+      window.addEventListener('resize', onScrollOrResize, { passive: true });
+      figure.addEventListener('load', onScrollOrResize, true);
+
+      onScrollOrResize();
+
+      // Cleanup
+      window.addEventListener('beforeunload', () => {
+        window.removeEventListener('scroll', onScrollOrResize);
+        window.removeEventListener('resize', onScrollOrResize);
+        figure.removeEventListener('load', onScrollOrResize, true);
+        if (raf) cancelAnimationFrame(raf);
+      });
+    });
+  })();
+</script>

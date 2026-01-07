@@ -1,0 +1,41 @@
+<script>
+  import Lenis from 'lenis';
+
+  const prefersReducedMotion =
+    window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+
+  if (!prefersReducedMotion) {
+    if (!window.__lenis) {
+      const lenis = new Lenis({
+        lerp: 0.1,
+        smoothWheel: true,
+      });
+
+      window.__lenis = lenis;
+
+      const raf = (time: number) => {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+
+      document.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+
+        const a = target.closest('a[href^="#"]');
+        if (!(a instanceof HTMLAnchorElement)) return;
+
+        const href = a.getAttribute('href');
+        if (!href || href === '#') return;
+
+        const el = document.querySelector(href);
+        if (!(el instanceof HTMLElement)) return;
+
+        e.preventDefault();
+        lenis.scrollTo(el);
+        history.pushState(null, '', href);
+      });
+    }
+  }
+</script>

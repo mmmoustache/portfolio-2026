@@ -1,5 +1,6 @@
 ---
 import LogoBlock from '@/components/LogoBlock.astro';
+import RevealClip from '@/components/RevealClip.astro';
 
 export type Tool = {
   id: string;
@@ -18,7 +19,11 @@ const toolsRow2 = tools.slice(4, 8);
 ---
 
 <section class="-mt-10">
-  <img src="/ocean.webp" class="mx-auto" />
+  <div class="mx-auto flex max-w-6xl">
+    <RevealClip initialInsetPct={20} initialScale={1.5}>
+      <img src="/ocean.webp" alt="A description of the image" loading="lazy" decoding="async" />
+    </RevealClip>
+  </div>
 </section>
 
 <section class="-mt-10 min-h-dvh bg-neutral-50">
