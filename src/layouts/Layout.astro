@@ -1,25 +1,32 @@
 ---
-import MainNavigation from '@/components/MainNavigation.astro';
 import '@/styles/global.css';
+
+import MainNavigation from '@/components/MainNavigation.astro';
+import Footer from '@/components/Footer.astro';
+
 import data from '@/data/navigation.json';
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Forum&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
-		<meta name="generator" content={Astro.generator} />
-		<title>Jack Coventry</title>
-	</head>
-	<body>
-		<MainNavigation items={data.main} />
-		<main id="content">
-			<slot />
-		</main>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Forum&family=Outfit:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="generator" content={Astro.generator} />
+    <title>Jack Coventry</title>
+  </head>
+  <body>
+    <MainNavigation items={data.main} />
+    <main id="content">
+      <slot />
+    </main>
+    <Footer items={data.main} />
+  </body>
 </html>

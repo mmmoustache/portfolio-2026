@@ -8,18 +8,29 @@ type Props = {
 const { title, text, tools } = Astro.props;
 ---
 
-<section class="min-h-dvh bg-neutral-50">
-  <div class="mx-auto p-7">
-    <img src="/ocean.webp" />
-    <h1 class="font-heading">
-      {title}
-    </h1>
-    <p set:html={text} class="font-sub-heading pt-6 text-left" />
-    <h2 class="font-sub-heading">TOOLS</h2>
-    <ul>
-      {tools?.map((tool) => <p>{tool}</p>)}
-    </ul>
-  </div>
+<section class="-mt-10">
+  <img src="/ocean.webp" class="mx-auto" />
+</section>
 
-  <img src="/me.webp" />
+<section class="-mt-10 min-h-dvh bg-neutral-50">
+  <div class="mx-auto p-7">
+    <div class="my-10 grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div class="col-span-1 lg:col-span-2">
+        <h1 class="font-heading">
+          {title}
+        </h1>
+        <p set:html={text} class="font-sub-heading pt-6 text-left" />
+
+        <div class="py-8">
+          <h2 class="font-sub-heading">TOOLS</h2>
+          <ul>
+            {tools?.map((tool) => <li>{tool}</li>)}
+          </ul>
+        </div>
+      </div>
+      <div class="col-span-1 lg:col-span-1">
+        <img src="/me.webp" />
+      </div>
+    </div>
+  </div>
 </section>

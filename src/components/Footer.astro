@@ -1,0 +1,40 @@
+---
+import TextSwap from '@/components/TextSwap.astro';
+
+type NavItem = {
+  href: string;
+  title: string;
+};
+
+const date = new Date().getFullYear();
+const { items = [] } = Astro.props;
+---
+
+<footer class="p-7">
+  <div class="grid grid-cols-1">
+    <div class="col-span-1">
+      <nav id="navigationFooter" aria-label="Footer" class="flex justify-between">
+        <div>
+          <span class="font-sub-heading block">Jack Coventry</span>
+          <p>Built with love. Copyright &copy {date}. All rights reserved.</p>
+          <button>Back to top</button>
+        </div>
+
+        {
+          items?.length > 0 ? (
+            <ul>
+              {items.map((item: NavItem) => (
+                <li>
+                  <a href={item.href} class="font-sub-heading block">
+                    <TextSwap text={item.title} class="flex p-2" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : null
+        }
+      </nav>
+    </div>
+  </div>
+</footer>
+<style></style>
