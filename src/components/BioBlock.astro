@@ -1,11 +1,20 @@
 ---
+import LogoBlock from './LogoBlock.astro';
+
+export type Tool = {
+  id: string;
+  name: string;
+};
+
 type Props = {
   title: string;
   text?: string;
-  tools: Array<string>;
+  tools: Array<Tool>;
 };
 
 const { title, text, tools } = Astro.props;
+const toolsRow1 = tools.slice(0, 4);
+const toolsRow2 = tools.slice(4, 8);
 ---
 
 <section class="-mt-10">
@@ -20,16 +29,13 @@ const { title, text, tools } = Astro.props;
           {title}
         </h1>
         <p set:html={text} class="font-sub-heading pt-6 text-left" />
-
-        <div class="py-8">
-          <h2 class="font-sub-heading">TOOLS</h2>
-          <ul>
-            {tools?.map((tool) => <li>{tool}</li>)}
-          </ul>
+        <div class="flex flex-col gap-5 py-8">
+          <LogoBlock items={toolsRow1} />
+          <LogoBlock items={toolsRow2} />
         </div>
       </div>
       <div class="col-span-1 lg:col-span-1">
-        <img src="/me.webp" />
+        <img src="/me.webp" class="max-lg:mx-auto max-lg:w-2xs" />
       </div>
     </div>
   </div>

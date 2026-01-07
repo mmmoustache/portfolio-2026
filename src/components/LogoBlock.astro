@@ -1,0 +1,22 @@
+---
+import type { Tool } from '@/components/BioBlock.astro';
+
+const { items } = Astro.props;
+---
+
+<ul class="flex w-full justify-between gap-6">
+  {
+    items?.map((tool: Tool) => (
+      <li class="col-span-1 flex w-[150px] flex-col gap-3">
+        <figure>
+          <img
+            src={`/logos/${tool.id}.svg`}
+            alt={`Logo of ${tool.name}`}
+            class="mx-auto h-[50px] w-[50px]"
+          />
+        </figure>
+        <span class="font-body block w-full text-center">{tool.name}</span>
+      </li>
+    ))
+  }
+</ul>

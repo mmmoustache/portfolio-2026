@@ -7,14 +7,38 @@
     "title": "About",
     "text": "Ahoy-hoy! I'm Jack and I'm passionate about accessible UI, design systems and writing neat code, based in <a href='#'>Manchester</a>, UK. Coming from a background in music production, I've spent 14 years building human-focused websites and apps. I specialise in full digital experiences, including CMS and API integrations, performance optimisation and accessibility. I like films, video games, writing, reading and making music.",
     "tools": [
-      "React",
-      "TypeScript",
-      "Next.js",
-      "Tailwind",
-      "Design Systems",
-      "CSS",
-      "Contentful",
-      "Astro"
+      {
+        "id": "react",
+        "name": "React"
+      },
+      {
+        "id": "typescript",
+        "name": "TypeScript"
+      },
+      {
+        "id": "nextjs",
+        "name": "Next.js"
+      },
+      {
+        "id": "tailwind",
+        "name": "Tailwind"
+      },
+      {
+        "id": "design-system",
+        "name": "Design Systems"
+      },
+      {
+        "id": "css",
+        "name": "CSS"
+      },
+      {
+        "id": "contentful",
+        "name": "Contentful"
+      },
+      {
+        "id": "astro",
+        "name": "Astro"
+      }
     ]
   }
 }
