@@ -9,46 +9,53 @@ export type BlogTileProps = {
 };
 
 const { title, text, href, image } = Astro.props;
+const hasImage = Boolean(image);
 ---
 
-<article
-  class="blog-tile text-swapper relative flex cursor-pointer flex-col gap-3 overflow-hidden bg-amber-300 p-5 lg:h-125"
-  data-has-image={Boolean(image)}
->
-  {title && <h3 class="font-sub-heading relative z-10">{title}</h3>}
-  {text && <p class="font-body relative z-10">{text}</p>}
-  {
-    href && (
-      <a href={href} class="faux-link | font-sub-heading mt-auto text-right">
-        <TextSwap text="Read more" class="relative z-10" />
-      </a>
-    )
-  }
+<article class="blog-tile text-swapper relative overflow-hidden" data-has-image={hasImage}>
   {
     image && (
       <img
         src={image}
-        class="blog-tile-image absolute top-0 left-0 block h-full w-full scale-100 object-cover transition-transform"
+        alt=""
+        loading="lazy"
+        class="blog-tile-image absolute inset-0 z-0 block h-full w-full object-cover transition-transform duration-700 ease-out"
       />
+    )
+  }
+
+  <span class="tile-overlay absolute inset-0 z-10" aria-hidden="true"></span>
+
+  {
+    href ? (
+      <a
+        href={href}
+        class="relative z-20 flex h-full cursor-pointer flex-col gap-3 p-5 lg:h-125"
+        aria-label={`Read more: ${title}`}
+      >
+        {title && <h3 class="font-sub-heading">{title}</h3>}
+        {text && <p class="font-body">{text}</p>}
+
+        <span class="font-sub-heading mt-auto text-right">
+          <TextSwap text="Read more" />
+        </span>
+      </a>
+    ) : (
+      <div class="relative z-20 flex h-full flex-col gap-3 p-5 lg:h-125">
+        {title && <h3 class="font-sub-heading">{title}</h3>}
+        {text && <p class="font-body">{text}</p>}
+      </div>
     )
   }
 </article>
 
 <style>
-  .faux-link::after {
-    content: '';
-    display: block;
-    height: 100%;
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    transition: background ease-in-out 0.25s;
-    width: 100%;
-    z-index: 8;
+  .tile-overlay {
+    background: transparent;
+    transition: background 0.6s ease;
   }
 
-  [data-has-image='true'] .faux-link::after {
+  [data-has-image='true'] .tile-overlay {
     background: rgba(0, 0, 0, 0.4);
   }
 
@@ -60,11 +67,31 @@ const { title, text, href, image } = Astro.props;
     color: var(--color-black);
   }
 
-  .blog-tile:hover .blog-tile-image {
-    transform: scale(1.2);
+  .blog-tile-image {
+    transform: scale(1.15);
   }
 
-  .blog-tile:hover .faux-link::after {
+  .blog-tile:hover .blog-tile-image {
+    transform: scale(1);
+  }
+
+  .blog-tile:hover .tile-overlay {
     background: rgba(0, 0, 0, 0.6);
+  }
+
+  .blog-tile a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blog-tile-image,
+    .tile-overlay {
+      transition: none;
+    }
+
+    .blog-tile:hover .blog-tile-image {
+      transform: none;
+    }
   }
 </style>

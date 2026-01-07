@@ -11,30 +11,29 @@ const { items = [] } = Astro.props;
 ---
 
 <footer class="p-7">
-  <div class="grid grid-cols-1">
-    <div class="col-span-1">
-      <nav id="navigationFooter" aria-label="Footer" class="flex justify-between">
-        <div>
-          <span class="font-sub-heading block">Jack Coventry</span>
-          <p>Built with love. Copyright &copy {date}. All rights reserved.</p>
-          <button>Back to top</button>
-        </div>
+  <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+    <p class="col-span-1 mt-auto">Built with love. Copyright &copy {date}. All rights reserved.</p>
 
-        {
-          items?.length > 0 ? (
-            <ul>
-              {items.map((item: NavItem) => (
-                <li>
-                  <a href={item.href} class="font-sub-heading block">
-                    <TextSwap text={item.title} class="flex p-2" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : null
-        }
-      </nav>
-    </div>
+    <nav id="navigationFooter" aria-label="Footer" class="col-span-2 flex xl:justify-end">
+      {
+        items?.length > 0 ? (
+          <ul class="mt-auto flex gap-5 max-lg:flex-col">
+            {items.map((item: NavItem) => (
+              <li>
+                <a href={item.href} class="font-sub-heading block">
+                  <TextSwap text={item.title} class="flex" />
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href="#" class="font-sub-heading cursor-pointer">
+                <TextSwap text="Back to top" class="flex" />
+              </a>
+            </li>
+          </ul>
+        ) : null
+      }
+    </nav>
   </div>
 </footer>
 <style></style>

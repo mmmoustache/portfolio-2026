@@ -14,7 +14,7 @@ const { title, text, items } = Astro.props;
 <section class="flex flex-col gap-6 p-7">
   {
     title && (
-      <h1 class="font-heading text-center text-amber-300">
+      <h1 class="font-heading flex justify-center text-amber-300">
         {title}
         <span class="text-amber-300">.</span>
       </h1>
@@ -23,7 +23,7 @@ const { title, text, items } = Astro.props;
   {text && <p class="font-sub-heading text-center">{text}</p>}
   {
     items.length > 0 ? (
-      <ul class="mx-auto grid max-w-7xl grid-cols-3 gap-4">
+      <ul class="mx-auto grid max-w-7xl gap-4 lg:grid-cols-3">
         {items?.map((item) => (
           <li class="col-span-1">
             <BlogTile title={item.title} text={item.text} href={item.href} image={item.image} />
