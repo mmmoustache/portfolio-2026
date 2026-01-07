@@ -1,11 +1,15 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+
 import Introduction from '@/components/Introduction.astro';
-import BioBlock from '@/components/BioBlock.astro';
+import Biography from '@/components/Biography.astro';
+import BlogPromo from '@/components/BlogPromo.astro';
+
 import data from '@/data/homepage.json';
 ---
 
 <Layout>
   <Introduction title={data?.introduction?.title} text={data?.introduction?.text} />
-  <BioBlock title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
+  <Biography title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
+  <BlogPromo title={data?.blog?.title} text={data?.blog?.text} items={data?.blog?.items} />
 </Layout>

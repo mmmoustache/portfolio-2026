@@ -87,6 +87,10 @@
       "2": {
         "$type": "fontWeight",
         "$value": 700
+      },
+      "3": {
+        "$type": "fontWeight",
+        "$value": 300
       }
     },
     "title": {
@@ -117,9 +121,9 @@
       "3": {
         "$value": {
           "fontFamily": "{font.family.2}",
-          "fontWeight": "{font.weight.1}",
-          "fontSize": "{font.size.5}",
-          "lineHeight": "{font.line-height.1}"
+          "fontWeight": "{font.weight.3}",
+          "fontSize": "{font.size.4}",
+          "lineHeight": "{font.line-height.4}"
         },
         "$extensions": {
           "$targetElement": "h3"

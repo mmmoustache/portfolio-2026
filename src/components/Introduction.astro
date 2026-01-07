@@ -4,7 +4,7 @@ type Props = {
   text?: string;
 };
 
-const { title, text } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <section
@@ -14,7 +14,6 @@ const { title, text } = Astro.props;
     <h1 class="font-heading">
       {title}<span class="text-sun-500 animate-pulse">.</span>
     </h1>
-    <!-- <p class="font-sub-heading pt-6 text-left">{text}</p> -->
   </div>
 </section>
 

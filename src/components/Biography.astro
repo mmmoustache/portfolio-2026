@@ -1,5 +1,5 @@
 ---
-import LogoBlock from './LogoBlock.astro';
+import LogoBlock from '@/components/LogoBlock.astro';
 
 export type Tool = {
   id: string;
@@ -26,9 +26,9 @@ const toolsRow2 = tools.slice(4, 8);
     <div class="my-10 grid grid-cols-1 gap-8 lg:grid-cols-3">
       <div class="col-span-1 lg:col-span-2">
         <h1 class="font-heading">
-          {title}
+          {title}<span class="text-amber-300">.</span>
         </h1>
-        <p set:html={text} class="font-sub-heading pt-6 text-left" />
+        <p set:html={text} class="font-title pt-6 text-left" />
         <div class="flex flex-col gap-5 py-8">
           <LogoBlock items={toolsRow1} />
           <LogoBlock items={toolsRow2} />

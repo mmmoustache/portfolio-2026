@@ -36,7 +36,7 @@ const chars = splitGraphemes(text);
   }
 </Tag>
 
-<style>
+<style is:global>
   .text-swap {
     --stagger: 35ms;
     --duration: 450ms;
@@ -55,6 +55,8 @@ const chars = splitGraphemes(text);
     transition-delay: 0ms;
   }
 
+  .text-swapper:hover .text-swap .top,
+  .text-swapper:hover .text-swap .bottom,
   .text-swap:hover .top,
   .text-swap:hover .bottom {
     transition-delay: calc(var(--i) * var(--stagger));
@@ -64,10 +66,12 @@ const chars = splitGraphemes(text);
     transform: translateY(110%);
   }
 
+  .text-swapper:hover .text-swap .top,
   .text-swap:hover .top {
     transform: translateY(-110%);
   }
 
+  .text-swapper:hover .text-swap .bottom,
   .text-swap:hover .bottom {
     transform: translateY(0);
   }

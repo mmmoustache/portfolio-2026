@@ -1,0 +1,37 @@
+---
+import TextSwap from './TextSwap.astro';
+
+export type BlogTileProps = {
+  title: string;
+  text: string;
+  href: string;
+  image?: string;
+};
+
+const { title, text, href } = Astro.props;
+---
+
+<article class="text-swapper relative flex cursor-pointer flex-col gap-3 bg-amber-300 p-5 lg:h-125">
+  {title && <h3 class="font-sub-heading">{title}</h3>}
+  {text && <p class="font-body">{text}</p>}
+  {
+    href && (
+      <a href={href} class="faux-link | font-sub-heading mt-auto text-right">
+        <TextSwap text="Read more" />
+      </a>
+    )
+  }
+</article>
+
+<style>
+  .faux-link::after {
+    content: '';
+    display: block;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+</style>
