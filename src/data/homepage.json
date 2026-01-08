@@ -36,8 +36,8 @@
         "name": "Contentful"
       },
       {
-        "id": "astro",
-        "name": "Astro"
+        "id": "storybook",
+        "name": "Storybook"
       }
     ]
   },

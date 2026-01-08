@@ -2,6 +2,8 @@
 import BlogTile from '@/components/BlogTile.astro';
 import SwipeImage from '@/components/SwipeImage.astro';
 import { getCollection } from 'astro:content';
+import BannerClip from './BannerClip.astro';
+import bannerImage from '@/assets/skyline.webp';
 
 type Props = {
   title: string;
@@ -15,7 +17,15 @@ const posts = (await getCollection('blog')).sort(
 const { title, text } = Astro.props;
 ---
 
-<section class="flex flex-col gap-6 p-7">
+<section class="-mt-10 overflow-hidden">
+  <div class="mx-auto flex max-w-6xl">
+    <BannerClip initialInsetPct={20} initialScale={1.5}>
+      <img src={bannerImage.src} alt="A description of the image" loading="lazy" decoding="async" />
+    </BannerClip>
+  </div>
+</section>
+
+<section class="flex flex-col gap-6 p-7 pt-9">
   {
     title && (
       <h1 class="font-heading flex justify-center text-amber-300">
