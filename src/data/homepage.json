@@ -43,26 +43,6 @@
   },
   "blog": {
     "title": "Blog",
-    "text": "Some articles that I wroted",
-    "items": [
-      {
-        "title": "Artificial intelligence in web development: there and back again",
-        "text": "Some text",
-        "href": "/a",
-        "image": "/forest.webp"
-      },
-      {
-        "title": "How I changed our team culture",
-        "text": "Some text",
-        "href": "/b",
-        "image": "/trees.webp"
-      },
-      {
-        "title": "10 tips for effective leadership",
-        "text": "Some text",
-        "href": "/c",
-        "image": "/mountains.webp"
-      }
-    ]
+    "text": "Some articles that I wroted"
   }
 }

@@ -1,15 +1,18 @@
 ---
-import type { BlogTileProps } from '@/components/BlogTile.astro';
 import BlogTile from '@/components/BlogTile.astro';
 import SwipeImage from '@/components/SwipeImage.astro';
+import { getCollection } from 'astro:content';
 
 type Props = {
   title: string;
   text?: string;
-  items: Array<BlogTileProps>;
 };
 
-const { title, text, items } = Astro.props;
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const { title, text } = Astro.props;
 ---
 
 <section class="flex flex-col gap-6 p-7">
@@ -23,12 +26,17 @@ const { title, text, items } = Astro.props;
   }
   {text && <p class="font-sub-heading text-center">{text}</p>}
   {
-    items.length > 0 ? (
+    posts.length > 0 ? (
       <ul class="mx-auto grid max-w-7xl gap-4 lg:grid-cols-3">
-        {items?.map((item, index) => (
+        {posts?.map((item, index) => (
           <li class="col-span-1">
             <SwipeImage threshold={0.3} delayMs={200 * index}>
-              <BlogTile title={item.title} text={item.text} href={item.href} image={item.image} />
+              <BlogTile
+                title={item.data.title}
+                text={item.data.description}
+                href={`/blog/${item.id}`}
+                image={item.data.listingImage?.src}
+              />
             </SwipeImage>
           </li>
         ))}

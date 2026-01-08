@@ -2,6 +2,7 @@
 import LogoBlock from '@/components/LogoBlock.astro';
 import BannerClip from '@/components/BannerClip.astro';
 import SwipeImage from '@/components/SwipeImage.astro';
+import bannerImage from '@/assets/ocean.webp';
 
 export type Tool = {
   id: string;
@@ -22,7 +23,7 @@ const toolsRow2 = tools.slice(4, 8);
 <section class="-mt-10 overflow-hidden">
   <div class="mx-auto flex max-w-6xl">
     <BannerClip initialInsetPct={20} initialScale={1.5}>
-      <img src="/ocean.webp" alt="A description of the image" loading="lazy" decoding="async" />
+      <img src={bannerImage.src} alt="A description of the image" loading="lazy" decoding="async" />
     </BannerClip>
   </div>
 </section>
@@ -42,7 +43,7 @@ const toolsRow2 = tools.slice(4, 8);
       </div>
       <div class="col-span-1 lg:col-span-1">
         <SwipeImage threshold={0.25}>
-          <img src="/me.webp" alt="Misty mountain" />
+          <img src="/src/assets/me.webp" alt="Misty mountain" />
         </SwipeImage>
       </div>
     </div>
