@@ -6,10 +6,12 @@ import Biography from '@/components/Biography.astro';
 import BlogPromo from '@/components/BlogPromo.astro';
 
 import data from '@/data/homepage.json';
+import WorkPromo from '@/components/WorkPromo.astro';
 ---
 
 <Layout>
   <Introduction title={data?.introduction?.title} text={data?.introduction?.text} />
   <Biography title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
+  <WorkPromo title={data?.work?.title} text={data?.work?.text} items={data?.work?.items} />
   <BlogPromo title={data?.blog?.title} text={data?.blog?.text} />
 </Layout>

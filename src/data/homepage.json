@@ -41,6 +41,27 @@
       }
     ]
   },
+  "work": {
+    "title": "Work",
+    "text": "Some personal projects",
+    "items": [
+      {
+        "title": "Farkle friend",
+        "text": "A local farkle multiplayer dice game, made with Next.js and React. Including different game variations and alternative modes.",
+        "href": "/"
+      },
+      {
+        "title": "HOAM",
+        "text": "A design system for the coffee brand HOAM, used in the HOAM e-commerce template",
+        "href": "/"
+      },
+      {
+        "title": "HOAM Store",
+        "text": "A an ecommerce template built for Shopify",
+        "href": "/"
+      }
+    ]
+  },
   "blog": {
     "title": "Blog",
     "text": "Some articles that I wroted"

@@ -1,0 +1,36 @@
+---
+import WorkTile from './WorkTile.astro';
+import type { Props as WorkTileProps } from '@/components/WorkTile.astro';
+
+const { title, text, items } = Astro.props;
+---
+
+<section class="-mt-10 min-h-dvh bg-amber-50">
+  <div class="mx-auto p-7">
+    <div class="my-10 grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div class="col-span-1 lg:col-span-1">
+        <h1 class="font-heading">
+          {title}<span class="text-amber-300">.</span>
+        </h1>
+        <p set:html={text} class="font-title pt-6 text-left" />
+      </div>
+      <ul class="col-span-1 flex flex-col gap-4 lg:col-span-2">
+        {
+          items.map((item: WorkTileProps) => (
+            <li class="work-promo-list-item">
+              <WorkTile title={item.title} text={item.text} href={item.href} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style is:inline>
+  .work-promo-list-item:not(:last-child) {
+    border-bottom: 1px solid var(--color-gray-200);
+    margin-bottom: var(--spacing-6);
+    padding-bottom: var(--spacing-6);
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import TextSwap from '@/components/TextSwap.astro';
+
+export type Props = {
+  title: string;
+  text: string;
+  href: string;
+};
+
+const { title, text, href } = Astro.props;
+---
+
+<div class="text-swapper relative flex flex-col gap-3">
+  <h3 class="font-heading">{title}</h3>
+  <p class="font-title">{text}</p>
+  <a href={href} target="_blank" class="font-sub-heading work-tile-link">
+    <TextSwap text="Visit project" />
+  </a>
+</div>
+
+<style>
+  .work-tile-link::before {
+    cursor: pointer;
+    content: '';
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+</style>
