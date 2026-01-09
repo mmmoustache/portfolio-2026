@@ -8,7 +8,7 @@ type BlogEntry = CollectionEntry<'blog'>;
 
 export const getStaticPaths = (async ({ paginate }) => {
   const allPosts = await getCollection('blog');
-  const PAGE_SIZE = 2;
+  const PAGE_SIZE = 6;
   const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   return paginate(posts, { pageSize: PAGE_SIZE });

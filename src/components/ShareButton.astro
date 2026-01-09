@@ -1,0 +1,52 @@
+---
+const { url } = Astro.props;
+---
+
+<button
+  type="button"
+  data-share-btn
+  data-share-url={url}
+  aria-live="polite"
+  aria-atomic="true"
+  class="font-body relative cursor-pointer"
+>
+  <span data-label>Share</span>
+  <span data-copied class="absolute top-auto left-0">Copied!</span>
+</button>
+
+<style>
+  button [data-label] {
+    opacity: 1;
+  }
+
+  button [data-copied] {
+    opacity: 0;
+  }
+
+  button[data-copied='true'] [data-label] {
+    opacity: 0;
+  }
+
+  button[data-copied='true'] [data-copied] {
+    opacity: 1;
+  }
+</style>
+
+<script type="module" is:inline>
+  import { copied, flashCopied } from '/src/store/share.js';
+
+  const btn = document.querySelector('[data-share-btn]');
+  if (!btn) throw new Error('Share button not found');
+
+  const url = btn.dataset.shareUrl;
+  if (!url) throw new Error('Missing data-share-url');
+
+  copied.subscribe((isCopied) => {
+    btn.dataset.copied = String(isCopied);
+  });
+
+  btn.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(url);
+    flashCopied();
+  });
+</script>

@@ -5,3 +5,29 @@
 :root {
   --navigation-height: 75px;
 }
+
+.body-text,
+.body-text h3,
+.body-text h4,
+.body-text h5,
+.body-text h6 {
+  font: var(--font-body-2);
+}
+
+.body-text h1 {
+  font: var(--font-title-2);
+}
+
+.body-text h2 {
+  font: var(--font-title-3);
+}
+
+.astro-code {
+  padding: var(--spacing-4);
+}
+
+.body-text ol,
+.body-text ul {
+  list-style: unset;
+  padding-left: var(--spacing-6);
+}

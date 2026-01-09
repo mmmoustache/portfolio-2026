@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '@/layouts/BlogPost.astro';
+import BlogPost from '@/layouts/Layout.astro';
+import BlogHero from '@/components/BlogHero.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -12,9 +13,33 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const { title, description, pubDate, heroImage } = post.data;
 ---
 
-<BlogPost {...post.data}>
-  <Content />
+<BlogPost>
+  <BlogHero title={title} description={description} pubDate={pubDate} heroImage={heroImage} />
+  <article class="grid grid-cols-4">
+    <aside class="col-span-4 lg:col-span-1">
+      <nav class="top-0 p-6 lg:sticky" aria-label="Contents">
+        <details>
+          <summary><h2 class="font-sub-heading">Contents</h2></summary>
+          <ul>
+            {
+              headings
+                .filter((h) => h.depth === 2 || h.depth === 3)
+                .map((h) => (
+                  <li class={`depth-${h.depth}`}>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))
+            }
+          </ul>
+        </details>
+      </nav>
+    </aside>
+    <section class="body-text col-span-4 flex flex-col gap-6 px-6 py-9 lg:col-span-2">
+      <Content />
+    </section>
+  </article>
 </BlogPost>

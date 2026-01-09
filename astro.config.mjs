@@ -16,4 +16,7 @@ export default defineConfig({
       },
     },
   },
+  markdown: {
+    rehypePlugins: [],
+  },
 });

@@ -90,12 +90,22 @@ const { items = [] } = Astro.props;
     if (open) {
       previousBodyOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.body.style.height = '100dvh';
       navEl.classList.add('navigation-offset', 'flex');
       navEl.classList.remove('hidden');
+
+      if (window.__lenis) {
+        window.__lenis?.stop();
+      }
     } else {
       document.body.style.overflow = previousBodyOverflow || '';
+      document.body.style.height = 'unset';
       navEl.classList.remove('navigation-offset', 'flex');
       navEl.classList.add('hidden');
+
+      if (window.__lenis) {
+        window.__lenis?.start();
+      }
     }
 
     toggle.textContent = open ? 'Close' : 'Menu';
