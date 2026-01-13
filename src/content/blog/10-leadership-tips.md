@@ -2,7 +2,6 @@
 title: '10 tips for effective leadership'
 description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
 pubDate: 'Jun 19 2024'
-heroImage: '../../assets/forest.webp'
 listingImage: '../../assets/forest.webp'
 ---
 

@@ -1,8 +1,7 @@
 ---
-title: 'Changing a team culture'
+title: 'Improving a team culture'
 description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
 pubDate: 'Jun 19 2024'
-heroImage: '../../assets/mountains.webp'
 listingImage: '../../assets/mountains.webp'
 ---
 

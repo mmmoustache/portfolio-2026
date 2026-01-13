@@ -14,18 +14,15 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
-const { title, description, pubDate, heroImage, duration } = post.data;
+const { title, description, pubDate, listingImage, duration } = post.data;
 ---
 
 <BlogPost>
-  <BlogHero
-    title={title}
-    description={description}
-    pubDate={pubDate}
-    heroImage={heroImage}
-    duration={duration}
-  />
+  <BlogHero title={title} description={description} pubDate={pubDate} duration={duration} />
   <article class="grid grid-cols-4">
+    <aside class="-mt-8 hidden p-6 lg:block">
+      <img src={listingImage?.src} />
+    </aside>
     <section
       class="body-text col-span-4 flex flex-col gap-6 px-5 py-9 lg:col-span-2 lg:col-start-2"
     >
@@ -33,17 +30,20 @@ const { title, description, pubDate, heroImage, duration } = post.data;
     </section>
     <aside class="col-span-4 lg:col-span-1">
       <nav class="top-0 px-5 lg:sticky lg:py-9" aria-label="Contents">
-        <details class="flex flex-col gap-2 border border-amber-200 px-5 py-4">
+        <details class="flex flex-col border border-amber-200 px-5 py-4">
           <summary class="relative flex cursor-pointer items-center justify-between"
             ><h2 class="font-sub-heading">Contents</h2></summary
           >
-          <ol class="flex max-h-96 flex-col gap-2 overflow-auto" data-lenis-prevent>
+          <ol
+            class="flex max-h-96 list-decimal flex-col gap-2 overflow-auto pt-4 pl-5"
+            data-lenis-prevent
+          >
             {
               headings
                 .filter((h) => h.depth === 2 || h.depth === 3)
                 .map((h) => (
                   <li class={`depth-${h.depth}`}>
-                    <a href={`#${h.slug}`} class="font-body">
+                    <a href={`#${h.slug}`} class="font-body hover:underline">
                       {h.text}
                     </a>
                   </li>

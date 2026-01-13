@@ -21,7 +21,7 @@ const chars = splitGraphemes(text);
 
 <Tag
   aria-label={text}
-  class={`text-swap | inline-block | ${className}`}
+  class={`text-swap | relative inline-block | ${className}`}
   style={`--stagger: ${staggerMs}ms;`}
 >
   {
@@ -74,6 +74,22 @@ const chars = splitGraphemes(text);
   .text-swapper:hover .text-swap .bottom,
   .text-swap:hover .bottom {
     transform: translateY(0);
+  }
+
+  .text-swap::after {
+    background-color: var(--color-sun-500);
+    content: '';
+    display: block;
+    height: 0.2em;
+    position: relative;
+    top: 0.1em;
+    transition: width ease-in-out 0.25s;
+    width: 0;
+  }
+
+  .text-swap:hover::after,
+  .text-swapper:hover .text-swap::after {
+    width: 100%;
   }
 
   @media (prefers-reduced-motion: reduce) {
