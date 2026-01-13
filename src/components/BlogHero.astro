@@ -1,6 +1,6 @@
 ---
 import ShareButton from '@/components/ShareButton.astro';
-const { heroImage, title, description, pubDate } = Astro.props;
+const { title, description, pubDate, duration = 1 } = Astro.props;
 const date = new Date(pubDate).toLocaleDateString('en-GB');
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 ---
@@ -10,7 +10,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
     <p class="font-title">{date}</p>
     <h1 class="font-heading">{title}</h1>
     <div class="flex justify-center gap-3">
-      <p class="font-body">3 min read</p>
+      <p class="font-body">{duration} minute read</p>
       <span class="text-amber-800">•</span>
       <ShareButton url={canonicalURL} />
     </div>

@@ -14,11 +14,17 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
-const { title, description, pubDate, heroImage } = post.data;
+const { title, description, pubDate, heroImage, duration } = post.data;
 ---
 
 <BlogPost>
-  <BlogHero title={title} description={description} pubDate={pubDate} heroImage={heroImage} />
+  <BlogHero
+    title={title}
+    description={description}
+    pubDate={pubDate}
+    heroImage={heroImage}
+    duration={duration}
+  />
   <article class="grid grid-cols-4">
     <section
       class="body-text col-span-4 flex flex-col gap-6 px-5 py-9 lg:col-span-2 lg:col-start-2"
@@ -31,7 +37,7 @@ const { title, description, pubDate, heroImage } = post.data;
           <summary class="relative flex cursor-pointer items-center justify-between"
             ><h2 class="font-sub-heading">Contents</h2></summary
           >
-          <ul class="flex max-h-96 flex-col gap-2 overflow-auto" data-lenis-prevent>
+          <ol class="flex max-h-96 flex-col gap-2 overflow-auto" data-lenis-prevent>
             {
               headings
                 .filter((h) => h.depth === 2 || h.depth === 3)
@@ -43,7 +49,7 @@ const { title, description, pubDate, heroImage } = post.data;
                   </li>
                 ))
             }
-          </ul>
+          </ol>
         </details>
       </nav>
     </aside>

@@ -1,216 +1,50 @@
 ---
 title: 'AI in web development: there and back again'
-description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
-pubDate: 'Jun 19 2024'
+description: ''
+pubDate: 'November 19 2024'
 heroImage: '../../assets/trees.webp'
 listingImage: '../../assets/trees.webp'
+duration: 5
 ---
 
-Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.
+# The discussion of artificial intelligence in web development has already been talked about to death, so I am here in the role of the gravedigger to add another 2 pence to the coffers. This isn’t a hot take, more of a lukewarm take and venting for my own sanity.
 
-## Headings
+The point of this article is not going to attack, defend or review any particular platform, as I think my points stand up regardless. At the time of writing, AI is still limited to the boundary of human knowledge. Given, it's already immensely powerful with a huge pool of information but it does not _yet_ have the capabilities to go beyond our own limitations. AI still has a long way to go to earn our trust.
 
-The following HTML `<h1>`—`<h6>` elements represent six levels of section headings. `<h1>` is the highest section level while `<h6>` is the lowest.
+## A promising start
 
-# H1
+To it's credit, whenever I have used AI outside of programming I have received some very good results, albeit I have also received some absolutely terrible results. I used copilot on a couple of projects and found the process pretty useful, I could see the hype. I could press the tab key and generate code for an entire component, what's the harm in that? I was going to write something similar anyway, why not? The urge of commiting untested, unfamiliar code that I didn't fully understand was very tempting.
 
-## H2
+But the more I used it, the more I started to resent it. Other than the moral complications of using it, copilot was trying to be _too_ clever and it started generating code I didn't want. VSCode started annoying me to the point that it was almost as if it wanted me to rely on copilot 100%. People were suggesting I use v0 to generate my code from a figma file. My first thought was why _would I want to do that_?
 
-### H3
+I like coding, I like being precise and intentional with my work. As easy as using copilot was, pride and enjoyment in my work will always outweigh the benefits of saving time.
 
-#### H4
+## AI lies to you
 
-##### H5
+I recently tried to find a piece of media from my childhood that I had been searching for forever, a cartoon that I have vague memories of that had been lost to time. It was worth a shot, maybe ChatGPT can help me find it - I was excited. I described it as best as I could remember and received some suggestions, but sadly none were correct. I then remembered something else, an important piece of information: that this media was adapted from something else. I let ChatGPT know and to my surprise, it returned an exact description of what I was looking for, even a title! I was thrilled, apparently the director produced it off the back of their graduation film and it was even broadcast on British television! I had never been this close before. Of course, my next question was "where can I watch it?". ChatGPT replied with the worst possible answer: "there is no record of this film existing".
 
-###### H6
+I was confused, disappointed and also a little bit angry that ChatGPT had led me down this rabbit hole. I requested it explained itself and why it had made up a film. It's reply: “Yes — you caught me. I owe you a clear answer. I mistakenly presented that film as if it were real — but there’s no record of it existing”. It went on to explain: “instead of leaving a gap, I can over-confidently “fill it in” with something that sounds right”. This last sentence felt very sinister to me - it admitted that it lied to me so that I perceived it as being reliable.
 
-## Paragraph
+Generally speaking, AI suggests what it _thinks_ is right but if the technology doesn’t fill me with confidence, how can I rely on it? To write an analogy, if you went to restaurant that 9 times out of 10 served your favourite meal and 1 time out of 10 it gave you food poisoning, would you still go?
 
-<h3 class="font-sub-heading" data-astro-cid-y7tdhkjy="">Artificial intelligence in web development: there and back again</h3>
-Xerum, quo qui aut unt expliquam qui dolut labo. Aque venitatiusda cum, voluptionse latur sitiae dolessi aut parist aut dollo enim qui voluptate ma dolestendit peritin re plis aut quas inctum laceat est volestemque commosa as cus endigna tectur, offic to cor sequas etum rerum idem sintibus eiur? Quianimin porecus evelectur, cum que nis nust voloribus ratem aut omnimi, sitatur? Quiatem. Nam, omnis sum am facea corem alique molestrunt et eos evelece arcillit ut aut eos eos nus, sin conecerem erum fuga. Ri oditatquam, ad quibus unda veliamenimin cusam et facea ipsamus es exerum sitate dolores editium rerore eost, temped molorro ratiae volorro te reribus dolorer sperchicium faceata tiustia prat.
+## AI can't help you when you need it most
 
-Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sapicia is sinveli squiatum, core et que aut hariosam ex eat.
+As I mentioned, AI can only help you based on a collective human knowledge set. If something you need lies outside that, it cannot help you. Have you ever been in a rabbit hole trying to figure out why some deeply-linked dependency is preventing your build script from working? Of course you have, but have you tried asking AI for help? I wouldn’t recommend it.
 
-## Images
+I was stuck, I was desperate and I needed to find something that would help me get out of a particularly deep rabbit hole. I asked AI to help debug an error I was having and after many suggestions, and many updates, AI couldn’t help me solve it. It just kept suggesting the same things over and over, one after an another until I decided to do what I should have done to begin with: read the documentation! Lo and behold, actually debugging the issue helped me... debug the issue.
 
-### Syntax
+You still need a solid foundation and understanding of how your tooling works, because if no-one has had this issue before, AI sure as hell won’t know either.
 
-```markdown
-![Alt text](./full/or/relative/path/of/image)
-```
+## AI is being pushed by people who don't code
 
-### Output
+I've mostly heard two strong view points on introducing AI into a development pipeline. They are "I hate writing this type of code, and this does it for me" and - more scarily - "This means we can charge the same amount for half of the time spent". Unsurprisingly, the second quote is a pretty much direct quote from a board-member I knew and surprisingly, the first quote is from a developer. Based on these two people, you would think the only justification for using AI is to save a company money and to prevent developers from doing work they don't want to do. Is it just me, or is that crazy?
 
-<!-- ![blog placeholder](/ocean.webp) -->
+It seems to be the dream for some is that coding ceases to be a thing and is replaced by AI entirely. "It can replace junior developers" - okay, that is abhorrent but what about the next generation of coders? How will they break into the industry? "Developer's jobs will simply become overseeing automated pull requests" - wow,
 
-## Blockquotes
+## Where it can help
 
-The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a `footer` or `cite` element, and optionally with in-line changes such as annotations and abbreviations.
+AI can be helpful to troubleshoot an issue or perform a monotonous task. It can be used as a reference point to explain a concept you don't understand. Relying on AI as a programmer will probably lead to you forgetting stuff and in some cases, not even bother learning any new stuff because 'AI can do it for me'.
 
-### Blockquote without attribution
+## Conclusion
 
-#### Syntax
-
-```markdown
-> Tiam, ad mint andaepu dandae nostion secatur sequo quae.  
-> **Note** that you can use _Markdown syntax_ within a blockquote.
-```
-
-#### Output
-
-> Tiam, ad mint andaepu dandae nostion secatur sequo quae.  
-> **Note** that you can use _Markdown syntax_ within a blockquote.
-
-### Blockquote with attribution
-
-#### Syntax
-
-```markdown
-> Don't communicate by sharing memory, share memory by communicating.<br>
-> — <cite>Rob Pike[^1]</cite>
-```
-
-#### Output
-
-> Don't communicate by sharing memory, share memory by communicating.<br>
-> — <cite>Rob Pike[^1]</cite>
-
-[^1]: The above quote is excerpted from Rob Pike's [talk](https://www.youtube.com/watch?v=PAAkCSZUG1c) during Gopherfest, November 18, 2015.
-
-## Tables
-
-### Syntax
-
-```markdown
-| Italics   | Bold     | Code   |
-| --------- | -------- | ------ |
-| _italics_ | **bold** | `code` |
-```
-
-### Output
-
-| Italics   | Bold     | Code   |
-| --------- | -------- | ------ |
-| _italics_ | **bold** | `code` |
-
-## Code Blocks
-
-### Syntax
-
-we can use 3 backticks ``` in new line and write snippet and close with 3 backticks on new line and to highlight language specific syntax, write one word of language name after first 3 backticks, for eg. html, javascript, css, markdown, typescript, txt, bash
-
-````markdown
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Example HTML5 Document</title>
-  </head>
-  <body>
-    <p>Test</p>
-  </body>
-</html>
-```
-````
-
-### Output
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Example HTML5 Document</title>
-  </head>
-  <body>
-    <p>Test</p>
-  </body>
-</html>
-```
-
-## List Types
-
-### Ordered List
-
-#### Syntax
-
-```markdown
-1. First item
-2. Second item
-3. Third item
-```
-
-#### Output
-
-1. First item
-2. Second item
-3. Third item
-
-### Unordered List
-
-#### Syntax
-
-```markdown
-- List item
-- Another item
-- And another item
-```
-
-#### Output
-
-- List item
-- Another item
-- And another item
-
-### Nested list
-
-#### Syntax
-
-```markdown
-- Fruit
-  - Apple
-  - Orange
-  - Banana
-- Dairy
-  - Milk
-  - Cheese
-```
-
-#### Output
-
-- Fruit
-  - Apple
-  - Orange
-  - Banana
-- Dairy
-  - Milk
-  - Cheese
-
-## Other Elements — abbr, sub, sup, kbd, mark
-
-### Syntax
-
-```markdown
-<abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
-
-H<sub>2</sub>O
-
-X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
-
-Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
-
-Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
-```
-
-### Output
-
-<abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
-
-H<sub>2</sub>O
-
-X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
-
-Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
-
-Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
+Even if the moral view point of not using it to save jobs and human creativity stands up, is it actually worth it? If you're using it for a client, do they even know the work they're paying you for is just feeding the infernal plagiarism machine? After getting into the hype and leaving with a sense of unease, I think AI can be used to set us up to do our job more efficiently, but it cannot do our job.

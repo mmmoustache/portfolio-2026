@@ -6,6 +6,11 @@
   --navigation-height: 75px;
 }
 
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .body-text,
 .body-text h3,
 .body-text h4,
