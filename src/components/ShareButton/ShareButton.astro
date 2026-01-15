@@ -32,10 +32,10 @@ const { url } = Astro.props;
   }
 </style>
 
-<script type="module" is:inline>
-  import { copied, flashCopied } from '/src/store/share.js';
+<script>
+  import { copied, flashCopied } from '@/store/share.js';
 
-  const btn = document.querySelector('[data-share-btn]');
+  const btn = document.querySelector('[data-share-btn]') as HTMLElement;
   if (!btn) throw new Error('Share button not found');
 
   const url = btn.dataset.shareUrl;

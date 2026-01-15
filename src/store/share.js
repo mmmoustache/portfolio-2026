@@ -4,5 +4,5 @@ export const copied = atom(false);
 
 export function flashCopied() {
   copied.set(true);
-  window.setTimeout(() => copied.set(false), 1200);
+  globalThis.setTimeout(() => copied.set(false), 1200);
 }
