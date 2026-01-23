@@ -20,7 +20,7 @@ const chars = splitGraphemes(text);
 >
   {
     chars.map((ch, i) => (
-      <span class="char | relative inline-block overflow-hidden align-bottom" style={`--i:${i}`}>
+      <span class="relative inline-block overflow-hidden align-bottom" style={`--i:${i}`}>
         <span class="top | inline-block will-change-transform">{ch === ' ' ? '\u00A0' : ch}</span>
         <span class="bottom | absolute top-0 left-0 inline-block will-change-transform">
           {ch === ' ' ? '\u00A0' : ch}

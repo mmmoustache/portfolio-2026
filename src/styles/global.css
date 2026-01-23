@@ -38,8 +38,17 @@ body {
   padding-left: var(--spacing-6);
 }
 
+#scrollSentinel {
+  position: absolute;
+  top: calc(var(--navigation-height) / 2);
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
 @theme {
   --animate-fade-in: fadeIn 0.25s ease-in-out forwards;
+  --animate-nav-entry: navEntry 0.25s ease-in-out forwards;
   --animate-shift-up: shiftUp 0.25s cubic-bezier(0, 0, 0.2, 1) forwards;
 
   @keyframes fadeIn {
@@ -59,6 +68,17 @@ body {
     100% {
       opacity: 1;
       transform: translateY(0%);
+    }
+  }
+
+  @keyframes navEntry {
+    0% {
+      opacity: 0;
+      transform: translateY(calc(var(--navigation-height) * -1));
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

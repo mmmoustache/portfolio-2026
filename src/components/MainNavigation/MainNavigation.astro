@@ -11,13 +11,13 @@ type NavItem = {
 const { items = [] } = Astro.props;
 ---
 
-<header id="header" class="header | absolute z-30 w-full max-lg:flex">
-  <a href="/" class="font-body z-40 block p-5 lg:hidden lg:px-7">{SITE_AUTHOR}</a>
+<header id="header" class="header | absolute top-0 left-0 z-30 flex w-full">
+  <a href="/" class="site-author | font-body z-40 block p-5 lg:px-7">{SITE_AUTHOR}</a>
 
   <button
     id="navigationToggle"
     type="button"
-    class="font-body z-40 ml-auto block cursor-pointer p-5 lg:hidden lg:px-7"
+    class="font-body z-40 ml-auto block cursor-pointer p-5 px-7"
     aria-controls="navigation"
     aria-expanded="false"
   >
@@ -26,19 +26,16 @@ const { items = [] } = Astro.props;
 
   <nav
     id="navigation"
-    class="max-lg:bg-secondary-light hidden max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:z-30 max-lg:h-dvh max-lg:w-dvw max-lg:items-center max-lg:justify-center lg:block lg:pt-0"
+    class="bg-secondary-light fixed top-0 left-0 z-30 hidden h-dvh w-dvw items-center justify-center pt-0"
     aria-label="Primary"
   >
     {
       items?.length > 0 ? (
         <ul
-          class="font-body flex justify-between max-lg:max-h-full max-lg:w-full max-lg:flex-col max-lg:items-center max-lg:overflow-auto max-lg:text-center max-lg:opacity-0"
+          class="font-body flex max-h-full w-full flex-col items-center justify-between overflow-auto text-center opacity-0"
           data-lenis-prevent
           id="navigationItems"
         >
-          <a href="/" class="px-7 py-5 max-lg:hidden">
-            {SITE_AUTHOR}
-          </a>
           {items.map((item: NavItem) => {
             const openInNewTab = Boolean(item?.externalLink);
             const attributes = {
@@ -52,8 +49,11 @@ const { items = [] } = Astro.props;
             };
             return (
               <li>
-                <a {...attributes} class="max-lg:font-heading block">
-                  <TextSwap text={item.title} class="flex px-7 py-5" />
+                <a {...attributes} class="font-heading block">
+                  <TextSwap
+                    text={item.title}
+                    class="flex px-7 py-5 leading-[1.2em] max-lg:leading-[1.1em]"
+                  />
                 </a>
               </li>
             );
@@ -67,6 +67,14 @@ const { items = [] } = Astro.props;
 <style>
   .header {
     height: var(--navigation-height);
+  }
+
+  .header.fixed .site-author {
+    display: none;
+  }
+
+  .header.fixed .site-author:has(+ #navigationToggle[aria-expanded='true']) {
+    display: block;
   }
 
   .navigation-offset {

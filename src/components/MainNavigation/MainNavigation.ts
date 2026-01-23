@@ -8,7 +8,6 @@ type NavMenuOptions = {
   navId?: string;
   navItemsId?: string;
   headerId?: string;
-  lgMediaQuery?: string;
   initialFocusSelector?: string;
   itemsAnimateDelayMs?: number;
 };
@@ -19,7 +18,6 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
     navId = 'navigation',
     navItemsId = 'navigationItems',
     headerId = 'header',
-    lgMediaQuery = '(min-width: 64rem)',
     initialFocusSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
     itemsAnimateDelayMs = 250,
   } = options;
@@ -28,14 +26,12 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
   const navEl = document.getElementById(navId);
   const navItemsEl = document.getElementById(navItemsId);
   const header = document.getElementById(headerId);
+  const scrollSentinel = document.getElementById('scrollSentinel');
 
   if (!toggle || !navEl) return () => {};
 
   let releaseTrap: Cleanup | null = null;
   let previousBodyOverflow = '';
-
-  const lgMq = window.matchMedia(lgMediaQuery);
-  let isLg = lgMq.matches;
 
   const stopLenis = () => window.__lenis?.stop();
   const startLenis = () => window.__lenis?.start();
@@ -44,7 +40,7 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
     if (open) {
       previousBodyOverflow = document.body.style.overflow;
 
-      document.body.classList.add('max-lg:overflow-hidden', 'max-lg:h-dvh');
+      document.body.classList.add('overflow-hidden', 'h-dvh');
       navEl.classList.add('navigation-offset', 'flex', 'motion-safe:animate-fade-in');
       navEl.classList.remove('hidden');
 
@@ -55,10 +51,9 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
       stopLenis();
     } else {
       document.body.style.overflow = previousBodyOverflow || '';
-      document.body.classList.remove('max-lg:overflow-hidden', 'max-lg:h-dvh');
+      document.body.classList.remove('overflow-hidden', 'h-dvh');
       navEl.classList.remove('navigation-offset', 'flex', 'motion-safe:animate-fade-in');
       navItemsEl?.classList.remove('motion-safe:animate-shift-up');
-
       navEl.classList.add('hidden');
       startLenis();
     }
@@ -85,40 +80,33 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
     releaseTrap = null;
   };
 
-  const handleBreakpointChange = (e: MediaQueryListEvent) => {
-    const nextIsLg = e.matches;
+  if (header && scrollSentinel) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        header.classList.toggle('fixed', !entry.isIntersecting);
+        header.classList.toggle('motion-safe:animate-nav-entry', !entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0,
+      }
+    );
 
-    if (nextIsLg && !isLg) {
-      navigationOpen.set(false);
-      closeNav();
-      startLenis();
-    }
-
-    if (!nextIsLg && isLg) {
-      if (navigationOpen.get?.() === true) stopLenis();
-    }
-
-    isLg = nextIsLg;
-  };
+    observer.observe(scrollSentinel);
+  }
 
   setUI(navigationOpen.get());
 
   const unsubscribe = navigationOpen.subscribe((open) => {
-    if (lgMq.matches) {
-      if (open) navigationOpen.set(false);
-      return;
-    }
-
     if (open) openNav();
     else closeNav();
   });
 
   const onToggleClick = () => {
-    if (!lgMq.matches) navigationToggle();
+    navigationToggle();
   };
 
   toggle.addEventListener('click', onToggleClick);
-  lgMq.addEventListener('change', handleBreakpointChange);
 
   let cleanedUp = false;
 
@@ -129,7 +117,6 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
     closeNav();
     unsubscribe?.();
 
-    lgMq.removeEventListener('change', handleBreakpointChange);
     toggle.removeEventListener('click', onToggleClick);
 
     document.removeEventListener('astro:before-swap', cleanup);

@@ -16,8 +16,8 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts/consts';
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
-  <body>
-    <div id="top"></div>
+  <body id="body">
+    <div id="scrollSentinel" aria-hidden="true"></div>
     <MainNavigation items={data.main} />
     <main id="content">
       <slot />
