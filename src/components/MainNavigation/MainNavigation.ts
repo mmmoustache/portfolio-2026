@@ -26,12 +26,16 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
   const navEl = document.getElementById(navId);
   const navItemsEl = document.getElementById(navItemsId);
   const header = document.getElementById(headerId);
+  const headerStatic = document.getElementById('headerStatic');
   const scrollSentinel = document.getElementById('scrollSentinel');
 
   if (!toggle || !navEl) return () => {};
 
   let releaseTrap: Cleanup | null = null;
   let previousBodyOverflow = '';
+
+  const lgMq = window.matchMedia('(min-width: 64rem)');
+  let isLg = lgMq.matches;
 
   const stopLenis = () => window.__lenis?.stop();
   const startLenis = () => window.__lenis?.start();
@@ -84,7 +88,9 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
     const observer = new IntersectionObserver(
       ([entry]) => {
         header.classList.toggle('fixed', !entry.isIntersecting);
+        header.classList.toggle('lg:hidden', entry.isIntersecting);
         header.classList.toggle('motion-safe:animate-nav-entry', !entry.isIntersecting);
+        headerStatic?.classList.toggle('lg:hidden', !entry.isIntersecting);
       },
       {
         root: null,
