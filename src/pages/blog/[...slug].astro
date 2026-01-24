@@ -18,18 +18,18 @@ const { title, pubDate, listingImage, duration } = post.data;
 ---
 
 <BlogPost>
-  <BlogHero title={title} pubDate={pubDate} duration={duration} />
+  <BlogHero title={title} pubDate={pubDate} duration={Number(duration)} />
   <article class="grid grid-cols-4">
     <aside class="-mt-8 hidden p-6 lg:block">
       <img src={listingImage?.src} />
     </aside>
     <section
-      class="body-text col-span-4 flex flex-col gap-6 px-5 py-9 lg:col-span-2 lg:col-start-2"
+      class="body-text col-span-4 flex flex-col gap-6 px-5 py-7 lg:col-span-2 lg:col-start-2"
     >
       <Content />
     </section>
     <aside class="col-span-4 lg:col-span-1">
-      <nav class="top-0 px-5 lg:sticky lg:py-9" aria-label="Contents">
+      <nav class="top-0 px-5 py-7" aria-label="Contents">
         <details class="flex flex-col border border-amber-200 px-5 py-4">
           <summary class="relative flex cursor-pointer items-center justify-between"
             ><h2 class="font-sub-heading">Contents</h2></summary

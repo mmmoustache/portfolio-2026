@@ -2,9 +2,12 @@
 @import './tokens.theme.css';
 @import './font.css';
 @import './color.css';
+@import './layout.css';
 
 :root {
   --navigation-height: 75px;
+  --focus-color: var(--color-yellow-300);
+  --focus-setting: 0 0 0 4px transparent, 0 0 0 6px var(--focus-color);
 }
 
 body {
@@ -44,6 +47,13 @@ body {
   width: 1px;
   height: 1px;
   pointer-events: none;
+}
+
+a:focus-visible,
+summary:focus-visible,
+button:not(:disabled):focus-visible {
+  box-shadow: var(--focus-setting);
+  outline: none;
 }
 
 @theme {

@@ -13,7 +13,7 @@ const { items = [] } = Astro.props;
 
 <a
   href="#content"
-  class="skip-to-content | font-body absolute top-0 left-0 -m-px h-px w-px overflow-hidden border-0 bg-white p-5 whitespace-nowrap"
+  class="skip-to-content | font-body absolute top-0 left-0 -m-px h-px w-px overflow-hidden border-0 bg-white p-0 whitespace-nowrap focus:m-0 focus:h-auto focus:w-auto focus:overflow-visible focus:p-5 focus:whitespace-normal"
   >Skip to content</a
 >
 
@@ -58,7 +58,7 @@ const { items = [] } = Astro.props;
   <button
     id="navigationToggle"
     type="button"
-    class="font-body z-40 ml-auto block cursor-pointer p-5 px-7"
+    class="font-body z-40 ml-auto block cursor-pointer p-5 lg:px-7"
     aria-controls="navigation"
     aria-expanded="false"
   >
@@ -128,6 +128,13 @@ const { items = [] } = Astro.props;
     }
   }
 
+  /* Hide the fixed navigation when it's not in a fixed state on large screens */
+  #headerStatic + .header:not(.fixed) {
+    @media (width >= 64rem) {
+      display: none;
+    }
+  }
+
   /* Show navigation toggle when navigation is open */
   #navigationToggle:has(+ #navigation:not(.hidden)) {
     display: block;
@@ -149,12 +156,7 @@ const { items = [] } = Astro.props;
   .skip-to-content:focus {
     clip: auto;
     clip-path: none;
-    height: auto;
-    margin: 0;
-    overflow: visible;
     transform: translate(10px, 10px);
-    white-space: normal;
-    width: auto;
     z-index: 2147483647;
   }
 </style>

@@ -81,16 +81,17 @@ const hasImage = Boolean(image);
   }
 
   .blog-tile-link {
-    box-shadow: 0 0 0 0 inset var(--color-primary);
+    box-shadow: 0 0 0 0 inset var(--focus-color);
     transition: box-shadow ease-in-out 0.25s;
   }
 
   .blog-tile-link:focus-visible {
-    box-shadow: 0 0 0 10px inset var(--color-primary);
+    box-shadow: 0 0 0 10px inset var(--focus-color);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .blog-tile-image,
+    .blog-tile-link,
     .tile-overlay {
       transition: none;
     }

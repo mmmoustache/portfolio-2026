@@ -150,6 +150,7 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
   const onToggleClick = () => {
     navigationToggle();
   };
+
   toggle.addEventListener('click', onToggleClick);
 
   const onBreakpointChange = () => {

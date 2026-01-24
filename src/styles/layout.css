@@ -1,0 +1,8 @@
+@utility layout-content {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-5);
+  padding-right: var(--spacing-5);
+  padding-top: var(--spacing-7);
+  padding-bottom: var(--spacing-7);
+}
