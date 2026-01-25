@@ -1,8 +1,5 @@
 ---
-title: About
-description: What this site is about
+title: Privacy
 ---
-
-## Hello
 
 This is a top-level text page.
