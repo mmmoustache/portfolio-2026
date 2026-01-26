@@ -58,11 +58,20 @@ const { items = [] } = Astro.props;
   <button
     id="navigationToggle"
     type="button"
-    class="font-body z-40 ml-auto block cursor-pointer p-5 lg:px-7"
+    class="group relative z-40 m-1 ml-auto grid h-14.5 min-w-11 cursor-pointer place-items-center border-0 bg-white px-3 focus-visible:outline focus-visible:outline-current"
     aria-controls="navigation"
     aria-expanded="false"
+    aria-label="Open menu"
+    data-state="closed"
   >
-    Menu
+    <span class="relative block h-3.75 w-8.5" aria-hidden="true">
+      <span
+        class="absolute top-1/2 left-0 h-px w-8.5 origin-center -translate-y-1.25 bg-black transition-transform duration-200 ease-in-out group-data-[state=open]:translate-y-0 group-data-[state=open]:rotate-45 motion-reduce:transition-none"
+      ></span>
+      <span
+        class="absolute top-1/2 left-0 h-px w-8.5 origin-center translate-y-1.25 bg-black transition-transform duration-200 ease-in-out group-data-[state=open]:translate-y-0 group-data-[state=open]:-rotate-45 motion-reduce:transition-none"
+      ></span>
+    </span>
   </button>
 
   <nav
@@ -140,6 +149,42 @@ const { items = [] } = Astro.props;
     display: block;
   }
 
+  /* Toggle */
+  .toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  [data-toggle-line] {
+    top: 50%;
+    transform-origin: center;
+    transition:
+      transform 180ms ease,
+      opacity 180ms ease;
+  }
+
+  [data-toggle-line='1'] {
+    transform: translateY(-7px) rotate(0deg);
+  }
+
+  [data-toggle-line='2'] {
+    transform: translateY(7px) rotate(0deg);
+  }
+
+  .toggle[aria-expanded='true'] [data-toggle-line='1'] {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  .toggle[aria-expanded='true'] [data-toggle-line='2'] {
+    transform: translateY(0) rotate(-45deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toggle__line {
+      transition: none;
+    }
+  }
+
   .navigation-offset {
     padding-top: var(--navigation-height);
 
@@ -156,7 +201,6 @@ const { items = [] } = Astro.props;
   .skip-to-content:focus {
     clip: auto;
     clip-path: none;
-    transform: translate(10px, 10px);
     z-index: 2147483647;
   }
 </style>

@@ -31,7 +31,7 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
     navId = 'navigation',
     navItemsId = 'navigationItems',
     headerId = 'header',
-    initialFocusSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    initialFocusSelector = '#navigationToggle',
     itemsAnimateDelayMs = 250,
   } = options;
 
@@ -102,8 +102,9 @@ export function initNavigationMenu(options: NavMenuOptions = {}): Cleanup {
       });
     }
 
-    toggle.textContent = open ? 'Close' : 'Menu';
     toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    toggle.dataset.state = open ? 'open' : 'closed';
   };
 
   const openNav = () => {
