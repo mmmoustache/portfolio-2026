@@ -24,8 +24,8 @@ const { title, text, items } = Astro.props;
       <ul class="col-span-1 flex flex-col gap-4 lg:col-span-2">
         {
           items.map((item: WorkTileProps, index) => (
-            <li class="work-promo-list-item | flex items-start">
-              <span class="text-tertiary font-heading w-10 leading-3">{index + 1}.</span>
+            <li class="work-promo-list-item | grid gap-4">
+              <span class="text-tertiary font-heading block leading-3">{index + 1}.</span>
               <WorkTile title={item.title} text={item.text} href={item.href} />
             </li>
           ))
@@ -36,6 +36,10 @@ const { title, text, items } = Astro.props;
 </section>
 
 <style is:inline>
+  .work-promo-list-item {
+    grid-template-columns: 10% 1fr;
+  }
+
   .work-promo-list-item:not(:last-child) {
     border-bottom: 1px solid var(--color-primary-heavy);
     margin-bottom: var(--spacing-6);

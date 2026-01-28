@@ -1,0 +1,382 @@
+function isTypingTarget(el: Element | null): boolean {
+  if (!el) return false;
+  const tag = el.tagName.toLowerCase();
+  return (
+    tag === 'input' ||
+    tag === 'textarea' ||
+    tag === 'select' ||
+    (el as HTMLElement).isContentEditable === true
+  );
+}
+
+function getFocusable(root: ParentNode): HTMLElement[] {
+  const selectors = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+  ];
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>(selectors.join(',')));
+  return nodes.filter((el) => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+}
+
+function dedupe<T>(items: T[]): T[] {
+  const seen = new Set<T>();
+  return items.filter((i) => (seen.has(i) ? false : (seen.add(i), true)));
+}
+
+type NavEls = {
+  header: HTMLElement;
+  desktopLogo: HTMLElement | null;
+  desktopSentinel: HTMLElement | null;
+
+  mobileBar: HTMLElement;
+  mobileLogo: HTMLElement;
+  toggle: HTMLButtonElement;
+
+  menu: HTMLElement;
+  overlay: HTMLElement;
+  panel: HTMLElement;
+};
+
+function queryRequired<T extends Element>(root: ParentNode, selector: string): T {
+  const el = root.querySelector<T>(selector);
+  if (!el) throw new Error(`[MainNav] Missing required element: ${selector}`);
+  return el;
+}
+
+function queryOptional<T extends Element>(root: ParentNode, selector: string): T | null {
+  return root.querySelector<T>(selector);
+}
+
+function collectEls(scope: ParentNode): NavEls {
+  const header = queryRequired<HTMLElement>(scope, '#siteHeader');
+
+  return {
+    header,
+    desktopLogo: queryOptional<HTMLElement>(header, '#desktopLogo'),
+    desktopSentinel: queryOptional<HTMLElement>(header, '#desktopNavSentinel'),
+
+    mobileBar: queryRequired<HTMLElement>(header, '#mobileBar'),
+    mobileLogo: queryRequired<HTMLElement>(header, '#mobileLogo'),
+    toggle: queryRequired<HTMLButtonElement>(header, '#menuToggle'),
+
+    menu: queryRequired<HTMLElement>(header, '#mobileMenu'),
+    overlay: queryRequired<HTMLElement>(header, '[data-menu-overlay]'),
+    panel: queryRequired<HTMLElement>(header, '[data-menu-panel]'),
+  };
+}
+
+export function initMainNav(scope: ParentNode = document): void {
+  let els: NavEls;
+  try {
+    els = collectEls(scope);
+  } catch (e) {
+    console.warn(e);
+    return;
+  }
+
+  const mqDesktop = globalThis.matchMedia('(min-width: 1024px)');
+
+  // State
+  let isMenuOpen = false;
+  let isAtTop = window.scrollY <= 0;
+  let isBarVisible = !mqDesktop.matches;
+  let lastFocused: Element | null = null;
+
+  function applyNavOffset() {
+    const h = els.mobileBar.offsetHeight || 0;
+    document.documentElement.style.setProperty('--nav-offset', `${h}px`);
+  }
+
+  function setPageInert(shouldInert: boolean) {
+    const children = Array.from(document.body.children);
+    for (const el of children) {
+      if (el === els.header) continue;
+
+      if (shouldInert) {
+        if ('inert' in el) (el as any).inert = true;
+        el.setAttribute('aria-hidden', 'true');
+      } else {
+        if ('inert' in el) (el as any).inert = false;
+        el.removeAttribute('aria-hidden');
+      }
+    }
+  }
+
+  function setLogoVisibility() {
+    const shouldShow = isMenuOpen || (isBarVisible && isAtTop);
+
+    els.mobileLogo.style.opacity = shouldShow ? '1' : '0';
+    els.mobileLogo.style.pointerEvents = shouldShow ? 'auto' : 'none';
+
+    if (shouldShow) {
+      els.mobileLogo.removeAttribute('tabindex');
+      els.mobileLogo.setAttribute('aria-hidden', 'false');
+    } else {
+      els.mobileLogo.setAttribute('tabindex', '-1');
+      els.mobileLogo.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function setBarFocusable(shouldBeFocusable: boolean) {
+    if (isMenuOpen) shouldBeFocusable = true;
+
+    if (shouldBeFocusable) {
+      if ('inert' in els.mobileBar) (els.mobileBar as any).inert = false;
+      els.mobileBar.removeAttribute('aria-hidden');
+
+      els.toggle.removeAttribute('tabindex');
+      els.toggle.removeAttribute('aria-hidden');
+    } else {
+      if ('inert' in els.mobileBar) (els.mobileBar as any).inert = true;
+      els.mobileBar.setAttribute('aria-hidden', 'true');
+
+      els.toggle.setAttribute('tabindex', '-1');
+      els.toggle.setAttribute('aria-hidden', 'true');
+
+      els.mobileLogo.setAttribute('tabindex', '-1');
+      els.mobileLogo.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function setBarVisible(shouldShow: boolean) {
+    if (isMenuOpen) shouldShow = true;
+
+    isBarVisible = shouldShow;
+
+    if (mqDesktop.matches) {
+      els.mobileBar.classList.toggle('bar-visible', shouldShow);
+    } else {
+      els.mobileBar.classList.add('bar-visible');
+    }
+
+    setBarFocusable(shouldShow || !mqDesktop.matches);
+    setLogoVisibility();
+  }
+
+  function lockScroll() {
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    if (scrollBarWidth > 0) document.body.style.paddingRight = `${scrollBarWidth}px`;
+  }
+
+  function unlockScroll() {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  function getTrapScopeFocusable(): HTMLElement[] {
+    return dedupe([...getFocusable(els.mobileBar), ...getFocusable(els.menu)]);
+  }
+
+  function trapFocus(e: KeyboardEvent) {
+    if (!isMenuOpen || e.key !== 'Tab') return;
+
+    const focusables = getTrapScopeFocusable();
+    if (!focusables.length) {
+      e.preventDefault();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (!els.mobileBar.contains(active) && !els.menu.contains(active)) {
+      e.preventDefault();
+      els.toggle.focus();
+      return;
+    }
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  function onMenuKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMenu();
+      return;
+    }
+    trapFocus(e);
+  }
+
+  function openMenu() {
+    if (isMenuOpen) {
+      els.toggle.focus();
+      return;
+    }
+
+    isMenuOpen = true;
+    lastFocused = document.activeElement;
+
+    setBarVisible(true);
+
+    els.mobileBar.dataset.menuOpen = 'true';
+    els.toggle.setAttribute('aria-expanded', 'true');
+    els.menu.hidden = false;
+    els.menu.setAttribute('aria-hidden', 'false');
+
+    requestAnimationFrame(() => {
+      els.menu.classList.remove('pointer-events-none');
+      els.menu.style.opacity = '1';
+    });
+
+    setPageInert(true);
+    lockScroll();
+    setLogoVisibility();
+
+    els.toggle.focus();
+
+    document.addEventListener('keydown', onMenuKeydown, true);
+  }
+
+  function closeMenu() {
+    if (!isMenuOpen) return;
+    isMenuOpen = false;
+
+    els.mobileBar.dataset.menuOpen = 'false';
+    els.toggle.setAttribute('aria-expanded', 'false');
+
+    els.menu.style.opacity = '0';
+    els.menu.classList.add('pointer-events-none');
+    els.menu.setAttribute('aria-hidden', 'true');
+
+    const reduce = globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = reduce ? 0 : 180;
+
+    globalThis.setTimeout(() => {
+      els.menu.hidden = true;
+    }, t);
+
+    setPageInert(false);
+    unlockScroll();
+    setLogoVisibility();
+
+    document.removeEventListener('keydown', onMenuKeydown, true);
+
+    if (lastFocused && typeof (lastFocused as HTMLElement).focus === 'function') {
+      (lastFocused as HTMLElement).focus();
+    }
+  }
+
+  function toggleMenu() {
+    isMenuOpen ? closeMenu() : openMenu();
+  }
+
+  function onOverlayClick(e: MouseEvent) {
+    const target = e.target as Node | null;
+    if (!target) return;
+    if (els.panel.contains(target)) return;
+    closeMenu();
+  }
+
+  function onPanelClick(e: MouseEvent) {
+    const target = e.target as HTMLElement | null;
+    const link = target?.closest?.('a');
+    if (link) closeMenu();
+  }
+
+  function updateAtTop() {
+    isAtTop = window.scrollY <= 0;
+    els.mobileBar.dataset.atTop = String(isAtTop);
+    setLogoVisibility();
+  }
+
+  function setupDesktopObserver() {
+    let io: IntersectionObserver | null = null;
+
+    const teardown = () => {
+      if (io) {
+        io.disconnect();
+        io = null;
+      }
+    };
+
+    const apply = () => {
+      teardown();
+
+      if (!mqDesktop.matches) {
+        setBarVisible(true);
+        return;
+      }
+
+      if (!els.desktopSentinel) {
+        setBarVisible(false);
+        return;
+      }
+
+      io = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        setBarVisible(!entry.isIntersecting);
+      });
+
+      io.observe(els.desktopSentinel);
+
+      const rect = els.desktopSentinel.getBoundingClientRect();
+      const sentinelInView = rect.top < window.innerHeight && rect.bottom >= 0;
+      setBarVisible(!sentinelInView);
+    };
+
+    mqDesktop.addEventListener('change', apply);
+
+    apply();
+  }
+
+  function onGlobalShortcut(e: KeyboardEvent) {
+    if (!e.altKey) return;
+    if (e.ctrlKey || e.metaKey) return;
+
+    const isK = e.code === 'KeyK' || (typeof e.key === 'string' && e.key.toLowerCase() === 'k');
+    if (!isK) return;
+
+    if (isTypingTarget(document.activeElement)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const fixedBarHidden = mqDesktop.matches && !els.mobileBar.classList.contains('bar-visible');
+
+    if (mqDesktop.matches && fixedBarHidden && els.desktopLogo) {
+      els.desktopLogo.focus();
+      return;
+    }
+
+    openMenu();
+  }
+
+  applyNavOffset();
+  setupDesktopObserver();
+  updateAtTop();
+  setLogoVisibility();
+  els.mobileLogo.classList.add('js-ready');
+
+  els.toggle.addEventListener('click', toggleMenu, { passive: true });
+  window.addEventListener('scroll', updateAtTop, { passive: true });
+  window.addEventListener('resize', applyNavOffset, { passive: true });
+
+  els.overlay.addEventListener('click', onOverlayClick);
+  els.panel.addEventListener('click', onPanelClick);
+
+  document.addEventListener('keydown', onGlobalShortcut, true);
+}
+
+function autoInit() {
+  initMainNav(document);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', autoInit, { once: true });
+} else {
+  autoInit();
+}
