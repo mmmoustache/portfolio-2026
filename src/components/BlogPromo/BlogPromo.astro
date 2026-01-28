@@ -21,7 +21,7 @@ const { title, text } = Astro.props;
 ---
 
 <section class="-mt-10 overflow-hidden">
-  <div class="layout-content | flex max-w-6xl">
+  <div class="layout-content | flex max-w-6xl py-7">
     <BannerClip initialInsetPct={20} initialScale={1.5}>
       <img src={bannerImage.src} alt="A description of the image" loading="lazy" decoding="async" />
     </BannerClip>
@@ -40,7 +40,7 @@ const { title, text } = Astro.props;
   {text && <p class="font-sub-heading text-center">{text}</p>}
   {
     posts.length > 0 ? (
-      <ul class="layout-content | grid max-w-96 gap-4 xl:max-w-7xl xl:grid-cols-3">
+      <ul class="layout-content | grid max-w-96 gap-4 py-7 xl:max-w-7xl xl:grid-cols-3">
         {posts?.map((item, index) => (
           <li class="col-span-1">
             <SwipeImage threshold={0.3} delayMs={200 * index}>
