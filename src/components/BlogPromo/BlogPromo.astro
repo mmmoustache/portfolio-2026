@@ -20,7 +20,7 @@ const posts = (await getCollection('blog')).sort(
 const { title, text } = Astro.props;
 ---
 
-<section class="-mt-10 overflow-hidden">
+<section class="bg-tertiary-light -mt-10 overflow-hidden">
   <div class="layout-content | flex max-w-6xl py-7">
     <BannerClip initialInsetPct={20} initialScale={1.5}>
       <img src={bannerImage.src} alt="A description of the image" loading="lazy" decoding="async" />
@@ -28,7 +28,7 @@ const { title, text } = Astro.props;
   </div>
 </section>
 
-<section class="bg-secondary-light flex flex-col gap-6 p-7 pt-9">
+<section class="flex flex-col gap-6 bg-white p-7 pt-9">
   {
     title && (
       <h2 class="font-heading flex justify-center">

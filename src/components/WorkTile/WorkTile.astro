@@ -10,23 +10,22 @@ export type Props = {
 const { title, text, href } = Astro.props;
 ---
 
-<div class="text-swapper relative flex flex-col gap-4">
-  <h3 class="font-sub-heading">{title}</h3>
-  <p class="font-body text-secondary">{text}</p>
-  <a href={href} target="_blank" class="font-title work-tile-link">
-    <TextSwap text="Visit project" />
-  </a>
+<div class="work-title | relative flex flex-col justify-center gap-4">
+  <div>
+    <h3 class="font-sub-heading">{title}</h3>
+    <p class="font-body text-secondary">{text}</p>
+  </div>
+  <div class="flex gap-3">
+    <a href={href} target="_blank" class="font-body work-tile-link">
+      <TextSwap text="Visit project" />
+    </a>
+    <a href={href} target="_blank" class="font-body work-tile-link">
+      <TextSwap text="Github" />
+    </a>
+  </div>
 </div>
 
 <style>
-  .work-tile-link::before {
-    cursor: pointer;
-    content: '';
-    display: block;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
+  .work-title {
   }
 </style>

@@ -1,69 +1,35 @@
 ---
+import TextSwap from '../TextSwap/TextSwap.astro';
+
 export type BlogTileProps = {
   href: string;
-  image?: string;
   title: string;
 };
 
-const { title, href, image } = Astro.props;
-const hasImage = Boolean(image);
+const { title, href } = Astro.props;
 ---
 
-<article class="blog-tile text-swapper relative overflow-hidden" data-has-image={hasImage}>
+<article
+  class="blog-tile | text-swapper bg-primary hover:bg-tertiary-light relative overflow-hidden transition-colors duration-500"
+>
   {
-    image && (
-      <img
-        src={image}
-        alt=""
-        loading="lazy"
-        class="blog-tile-image absolute inset-0 z-0 block h-full w-full object-cover transition-transform duration-700 ease-out"
-      />
-    )
-  }
-
-  <span class="tile-overlay absolute inset-0 z-10" aria-hidden="true"></span>
-
-  {
-    href ? (
+    (
       <a
         href={href}
-        class="blog-tile-link relative z-20 flex h-125 cursor-pointer items-center gap-3 text-center"
+        class="blog-tile-link | relative z-20 flex h-125 cursor-pointer flex-col p-5"
         aria-label={`Read more: ${title}`}
         tabindex="0"
       >
-        {title && <h3 class="font-sub-heading p-4">{title}</h3>}
-      </a>
-    ) : (
-      <div class="relative z-20 flex h-125 flex-col gap-3">
         {title && <h3 class="font-sub-heading">{title}</h3>}
-      </div>
+        <span class="font-title mt-auto block text-right">
+          <TextSwap text="Read more" />
+        </span>
+      </a>
     )
   }
 </article>
 
 <style>
-  .tile-overlay {
-    background: transparent;
-    transition: background 0.6s ease;
-  }
-
-  [data-has-image='true'] .tile-overlay {
-    background: rgba(0, 0, 0, 0.6);
-    filter: blur(10px);
-  }
-
-  [data-has-image='true'] {
-    color: var(--color-white);
-  }
-
-  [data-has-image='false'] {
-    color: var(--color-black);
-  }
-
-  .blog-tile-image {
-    transform: scale(1.15);
-  }
-
   .blog-tile-link {
     box-shadow: 0 0 0 0 inset var(--focus-color);
     transition: box-shadow ease-in-out 0.25s;
@@ -74,26 +40,14 @@ const hasImage = Boolean(image);
   }
 
   @media (hover: hover) {
-    .blog-tile:hover .blog-tile-image {
-      transform: scale(1);
-    }
-
-    .blog-tile:hover .tile-overlay {
-      background: rgba(0, 0, 0, 0.6);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .blog-tile-image,
-    .blog-tile-link,
-    .tile-overlay {
+    .blog-tile-link {
       transition: none;
     }
 
     @media (hover: hover) {
-      .blog-tile:hover .blog-tile-image {
-        transform: none;
-      }
     }
   }
 </style>
