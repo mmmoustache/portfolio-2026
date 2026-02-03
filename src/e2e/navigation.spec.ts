@@ -24,4 +24,25 @@ test.describe('Navigation', () => {
     await expectLayout(page, 'page');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   });
+
+  test('mobile-only menu test', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'mobile-only'); // Only run this test on the mobile project
+    await page.goto(ROUTES.home);
+
+    const menuButton = page.getByRole('button', { name: /Open menu/i });
+
+    await expect(menuButton).toHaveCount(0);
+    await page.evaluate(() => window.scrollTo(0, 100));
+    await page.waitForTimeout(50);
+
+    await expect(menuButton).toBeVisible();
+    await menuButton.focus();
+    await expect(menuButton).toBeFocused();
+
+    await page.keyboard.press('Enter');
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+
+    await page.keyboard.press('Escape');
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+  });
 });
