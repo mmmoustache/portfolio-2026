@@ -3,9 +3,9 @@ import { prefersReducedMotion } from '@/utils/prefersReduceMotion';
 
 type BannerClipDataset = {
   ease?: string;
+  hasInitialized?: 'true' | 'false';
   initialInset?: string;
   initialScale?: string;
-  rzInit?: 'true' | 'false';
 };
 
 type BannerClipEl = HTMLElement & {
@@ -17,11 +17,11 @@ function parseNumber(
   fallback: number,
   opts?: { min?: number; max?: number }
 ): number {
-  const n = value == null ? Number.NaN : Number(value);
-  const safe = Number.isFinite(n) ? n : fallback;
+  const valueAsInt = value == null ? Number.NaN : Number(value);
+  const safeInt = Number.isFinite(valueAsInt) ? valueAsInt : fallback;
   const min = opts?.min ?? -Infinity;
   const max = opts?.max ?? Infinity;
-  return clamp(safe, min, max);
+  return clamp(safeInt, min, max);
 }
 
 function isBannerClipEl(el: Element): el is BannerClipEl {
@@ -36,8 +36,8 @@ export function BannerClip(): void {
   els.forEach((el) => {
     if (!isBannerClipEl(el)) return;
 
-    if (el.dataset.rzInit === 'true') return;
-    el.dataset.rzInit = 'true';
+    if (el.dataset.hasInitialized === 'true') return;
+    el.dataset.hasInitialized = 'true';
 
     const inner = el.querySelector<HTMLElement>('.banner-clip__inner');
     if (!inner) return;

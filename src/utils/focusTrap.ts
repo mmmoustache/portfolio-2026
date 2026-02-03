@@ -1,4 +1,4 @@
-const FOCUSABLE_SELECTOR = [
+export const FOCUSABLE_SELECTOR = [
   'a[href]',
   'area[href]',
   'button:not([disabled])',
@@ -49,11 +49,11 @@ function isFocusable(el: HTMLElement): boolean {
   if (el.hasAttribute('disabled')) return false;
   if (el.getAttribute('aria-hidden') === 'true') return false;
 
-  const style = window.getComputedStyle(el);
+  const style = globalThis.getComputedStyle(el);
   return style.display !== 'none' && style.visibility !== 'hidden';
 }
 
-function getFocusable(container: HTMLElement): HTMLElement[] {
+export function getFocusable(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
     isFocusable
   );
@@ -131,11 +131,9 @@ export function createFocusTrap(
         e.preventDefault();
         last.focus({ preventScroll: true });
       }
-    } else {
-      if (active === last) {
-        e.preventDefault();
-        first.focus({ preventScroll: true });
-      }
+    } else if (active === last) {
+      e.preventDefault();
+      first.focus({ preventScroll: true });
     }
   }
 

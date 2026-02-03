@@ -2,6 +2,7 @@
 import TextSwap from '@/components/TextSwap/TextSwap.astro';
 
 type NavItem = {
+  externalLink?: boolean;
   href: string;
   label: string;
 };
@@ -28,13 +29,25 @@ const { items = [] } = Astro.props;
       {
         items?.length > 0 ? (
           <ul class="mt-auto flex gap-5 max-lg:flex-col">
-            {items.map((item: NavItem) => (
-              <li>
-                <a href={item.href} class="font-sub-heading block">
-                  <TextSwap text={item.label} class="flex" />
-                </a>
-              </li>
-            ))}
+            {items.map((item: NavItem) => {
+              const openInNewTab = Boolean(item?.externalLink);
+              const attributes = {
+                href: item.href,
+                ...(openInNewTab
+                  ? {
+                      target: '_blank',
+                      rel: 'noopener noreferrer',
+                    }
+                  : null),
+              };
+              return (
+                <li>
+                  <a {...attributes} class="font-sub-heading block">
+                    <TextSwap text={item.label} class="flex" />
+                  </a>
+                </li>
+              );
+            })}
             <li>
               <a href="#body" class="font-sub-heading cursor-pointer">
                 <TextSwap text="Back to top" class="flex" />

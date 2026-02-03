@@ -2,14 +2,14 @@
 export type Props = {
   class?: string;
   ease?: number;
-  initialInsetPct?: number;
+  initialInsetPercentage?: number;
   initialScale?: number;
 };
 
 const {
   class: className = '',
   ease = 0.12,
-  initialInsetPct = 30,
+  initialInsetPercentage = 30,
   initialScale = 1.15,
 } = Astro.props;
 ---
@@ -17,13 +17,13 @@ const {
 <figure
   class={`banner-clip | w-full | ${className}`}
   data-banner-clip
-  data-initial-inset={initialInsetPct}
+  data-initial-inset={initialInsetPercentage}
   data-initial-scale={initialScale}
   data-ease={ease}
 >
   <div
     class="banner-clip__inner | h-auto w-full overflow-hidden"
-    style={`--inset: ${initialInsetPct}%; --scale: ${initialScale};`}
+    style={`--inset: ${initialInsetPercentage}%; --scale: ${initialScale};`}
   >
     <slot />
   </div>

@@ -1,3 +1,6 @@
+import { dedupe } from '@/utils/dedupe';
+import { getFocusable } from '@/utils/focusTrap';
+
 function isTypingTarget(el: Element | null): boolean {
   if (!el) return false;
   const tag = el.tagName.toLowerCase();
@@ -7,24 +10,6 @@ function isTypingTarget(el: Element | null): boolean {
     tag === 'select' ||
     (el as HTMLElement).isContentEditable === true
   );
-}
-
-function getFocusable(root: ParentNode): HTMLElement[] {
-  const selectors = [
-    'a[href]',
-    'button:not([disabled])',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
-    '[tabindex]:not([tabindex="-1"])',
-  ];
-  const nodes = Array.from(root.querySelectorAll<HTMLElement>(selectors.join(',')));
-  return nodes.filter((el) => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length));
-}
-
-function dedupe<T>(items: T[]): T[] {
-  const seen = new Set<T>();
-  return items.filter((i) => (seen.has(i) ? false : (seen.add(i), true)));
 }
 
 type NavEls = {
@@ -382,13 +367,11 @@ export function initMainNav(scope: ParentNode = document): void {
   els.toggle.addEventListener('click', toggleMenu, { passive: true });
   window.addEventListener('scroll', updateAtTop, { passive: true });
   window.addEventListener('resize', applyNavOffset, { passive: true });
+  document.addEventListener('keydown', onGlobalShortcut, true);
+  document.addEventListener('click', skipToContent);
 
   els.overlay.addEventListener('click', onOverlayClick);
   els.panel.addEventListener('click', onPanelClick);
-
-  document.addEventListener('keydown', onGlobalShortcut, true);
-
-  document.addEventListener('click', skipToContent);
 }
 
 function autoInit() {

@@ -54,6 +54,7 @@ const { url } = Astro.props;
       }
     } catch {}
 
+    // Fallback for iOS
     const ta = document.createElement('textarea');
     ta.value = url;
     ta.setAttribute('readonly', '');

@@ -24,11 +24,11 @@ body {
 }
 
 .body-text h1 {
-  font: var(--font-title-2);
+  font: var(--font-title-3);
 }
 
 .body-text h2 {
-  font: var(--font-title-3);
+  font: var(--font-title-2);
 }
 
 .astro-code {

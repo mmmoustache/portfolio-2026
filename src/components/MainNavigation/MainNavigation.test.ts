@@ -1,5 +1,5 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { initNavigationMenu } from '@/components/MainNavigation/MainNavigation';
+import { initMainNav } from '@/components/MainNavigation/MainNavigation';
 
 type CreateFocusTrap = (typeof import('@/utils/focusTrap'))['createFocusTrap'];
 type Unsubscribe = () => void;
@@ -143,7 +143,7 @@ function setupDom() {
   };
 }
 
-describe('initNavigationMenu', () => {
+describe('initMainNav', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     navigationOpenStore.set(false);
@@ -162,7 +162,7 @@ describe('initNavigationMenu', () => {
 
   it('returns a no-op cleanup if required elements are missing', () => {
     document.body.innerHTML = `<div></div>`;
-    const cleanup = initNavigationMenu();
+    const cleanup = initMainNav();
     expect(typeof cleanup).toBe('function');
     expect(() => cleanup()).not.toThrow();
   });
@@ -171,7 +171,7 @@ describe('initNavigationMenu', () => {
     const { toggle, nav } = setupDom();
     installLenis();
 
-    initNavigationMenu();
+    initMainNav();
 
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
     expect(toggle.textContent).toBe('Menu');
@@ -184,7 +184,7 @@ describe('initNavigationMenu', () => {
     const { toggle, nav, navItems, header } = setupDom();
     const lenis = installLenis();
 
-    initNavigationMenu({ itemsAnimateDelayMs: 250 });
+    initMainNav({ itemsAnimateDelayMs: 250 });
 
     toggle.click();
 
@@ -215,7 +215,7 @@ describe('initNavigationMenu', () => {
     const { toggle, nav, navItems } = setupDom();
     const lenis = installLenis();
 
-    initNavigationMenu();
+    initMainNav();
 
     toggle.click(); // open
     expect(navisOpen()).toBe(true);
@@ -247,7 +247,7 @@ describe('initNavigationMenu', () => {
     const lenis = installLenis();
     const mm = installMatchMedia(false);
 
-    initNavigationMenu();
+    initMainNav();
 
     toggle.click();
     expect(lenis.stop).toHaveBeenCalledTimes(1);
@@ -270,7 +270,7 @@ describe('initNavigationMenu', () => {
     const { header, headerStatic } = setupDom();
     installLenis();
 
-    initNavigationMenu();
+    initMainNav();
 
     const obs = FakeIntersectionObserver.instances[0];
     expect(obs).toBeTruthy();
@@ -293,7 +293,7 @@ describe('initNavigationMenu', () => {
     const lenis = installLenis();
 
     const mm = installMatchMedia(false);
-    const cleanup = initNavigationMenu();
+    const cleanup = initMainNav();
 
     toggle.click();
     expect(nav.classList.contains('hidden')).toBe(false);

@@ -21,10 +21,10 @@ const { title, pubDate, listingImage, duration } = post.data;
   <BlogHero title={title} pubDate={pubDate} duration={Number(duration)} />
   <article class="grid grid-cols-4">
     <aside class="col-span-4 xl:col-span-1">
-      <nav class="sticky top-0 px-5 py-7" aria-label="Contents">
+      <nav class="sticky top-0 mt-2 px-5 py-4 xl:mt-9" aria-label="Contents">
         <details class="border-tertiary flex flex-col border px-5 py-4">
           <summary class="relative flex cursor-pointer items-center justify-between"
-            ><h2 class="font-sub-heading">Contents</h2></summary
+            ><h2 class="font-body xl:font-sub-heading">Contents</h2></summary
           >
           <ol
             class="flex max-h-96 list-decimal flex-col gap-2 overflow-auto pt-4 pl-5"
@@ -46,7 +46,7 @@ const { title, pubDate, listingImage, duration } = post.data;
       </nav>
     </aside>
     <section
-      class="body-text col-span-4 flex flex-col gap-6 px-5 py-7 xl:col-span-2 xl:col-start-2"
+      class="body-text col-span-4 flex flex-col gap-6 px-5 py-5 xl:col-span-2 xl:col-start-2 xl:py-9"
     >
       <Content />
     </section>

@@ -3,7 +3,7 @@ import TextSwap from '@/components/TextSwap/TextSwap.astro';
 import { SITE_AUTHOR } from '@/consts/consts';
 
 type NavItem = {
-  externalLink: boolean;
+  externalLink?: boolean;
   href: string;
   label: string;
 };
@@ -127,7 +127,7 @@ const { items = [] } = Astro.props;
                   : null),
               };
               return (
-                <li class="p-3">
+                <li class="p-2">
                   <a {...attributes} class="font-heading block text-center">
                     <TextSwap
                       text={item.label}

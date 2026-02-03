@@ -5,9 +5,9 @@ import FallbackImage from '@/assets/me.webp';
 import { SITE_TITLE } from '@/consts/consts';
 
 type Props = {
-  title: string;
   description: string;
   image?: ImageMetadata;
+  title: string;
 };
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);

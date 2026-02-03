@@ -1,29 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { BannerClip } from '@/components/BannerClip/BannerClip';
+import { setMatchMedia } from '@/utils/setMatchMedia';
 
-function setMatchMedia(matches: boolean) {
-  const matchMedia = vi.fn().mockImplementation((query: string) => {
-    return {
-      media: query,
-      matches,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    } as unknown as MediaQueryList;
-  });
-
-  Object.defineProperty(globalThis, 'matchMedia', {
-    configurable: true,
-    value: matchMedia,
-  });
-
-  return matchMedia;
-}
-
-describe('BannerClip', () => {
+describe('BannerClip component', () => {
   let rafSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -63,7 +42,7 @@ describe('BannerClip', () => {
     const figure = document.querySelector('figure') as HTMLElement;
     const inner = document.querySelector('.banner-clip__inner') as HTMLElement;
 
-    expect(figure.dataset.rzInit).toBeUndefined();
+    expect(figure.dataset.hasInitialized).toBeUndefined();
     expect(inner.style.getPropertyValue('--inset')).toBe('');
     expect(inner.style.getPropertyValue('--scale')).toBe('');
     expect(rafSpy).not.toHaveBeenCalled();
@@ -100,7 +79,7 @@ describe('BannerClip', () => {
 
     BannerClip();
 
-    expect(figure.dataset.rzInit).toBe('true');
+    expect(figure.dataset.hasInitialized).toBe('true');
     expect(inner.style.getPropertyValue('--inset')).toBe('30.000%');
     expect(inner.style.getPropertyValue('--scale')).toBe('1.1500');
 
@@ -111,7 +90,7 @@ describe('BannerClip', () => {
     expect(rafSpy.mock.calls.length).toBe(rafCallsAfterFirstInit);
   });
 
-  it('updates CSS vars on scroll (progress changes)', () => {
+  it('updates CSS vars on scroll', () => {
     setMatchMedia(false);
 
     document.body.innerHTML = `
