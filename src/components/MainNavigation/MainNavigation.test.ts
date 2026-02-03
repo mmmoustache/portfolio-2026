@@ -120,8 +120,6 @@ function installRafImmediate() {
 
 function setupDom() {
   document.body.innerHTML = `
-    <div id="scrollSentinel"></div>
-
     <header id="headerStatic"></header>
 
     <header id="header">
@@ -139,7 +137,6 @@ function setupDom() {
     navItems: document.getElementById('navigationItems') as HTMLElement,
     header: document.getElementById('header') as HTMLElement,
     headerStatic: document.getElementById('headerStatic') as HTMLElement,
-    scrollSentinel: document.getElementById('scrollSentinel') as HTMLElement,
   };
 }
 

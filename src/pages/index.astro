@@ -9,7 +9,7 @@ import WorkPromo from '@/components/WorkPromo/WorkPromo.astro';
 import data from '@/data/homepage.json';
 ---
 
-<Layout>
+<Layout id="home">
   <Introduction title={data?.introduction?.title} />
   <Biography title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
   <WorkPromo title={data?.work?.title} text={data?.work?.text} items={data?.work?.items} />

@@ -1,6 +1,6 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '@/layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
 import BlogHero from '@/components/BlogHero/BlogHero.astro';
 
 export async function getStaticPaths() {
@@ -17,7 +17,7 @@ const { Content, headings } = await render(post);
 const { title, pubDate, listingImage, duration } = post.data;
 ---
 
-<BlogPost>
+<Layout id="post">
   <BlogHero title={title} pubDate={pubDate} duration={Number(duration)} />
   <article class="grid grid-cols-4">
     <aside class="col-span-4 xl:col-span-1">
@@ -54,7 +54,7 @@ const { title, pubDate, listingImage, duration } = post.data;
       <img src={listingImage?.src} alt="A decorative, scenic image" />
     </aside>
   </article>
-</BlogPost>
+</Layout>
 
 <style is:inline>
   details summary::after {

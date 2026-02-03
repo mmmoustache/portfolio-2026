@@ -41,14 +41,6 @@ body {
   padding-left: var(--spacing-6);
 }
 
-#scrollSentinel {
-  position: absolute;
-  top: calc(var(--navigation-height) / 2);
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
-}
-
 a:focus-visible,
 summary:focus-visible,
 button:not(:disabled):focus-visible {

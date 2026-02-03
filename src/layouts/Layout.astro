@@ -11,6 +11,8 @@ import ScrollProvider from '@/components/ScrollProvider/ScrollProvider.astro';
 import data from '@/data/navigation.json';
 
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts/consts';
+
+const { id } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,9 +21,8 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts/consts';
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
   <body id="body">
-    <div id="scrollSentinel" aria-hidden="true"></div>
     <MainNavigation items={data.main} />
-    <main id="content" tabindex="-1">
+    <main id="content" tabindex="-1" data-testid="main" data-layout={id}>
       <slot />
       <ScrollProvider />
     </main>

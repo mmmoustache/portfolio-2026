@@ -13,7 +13,7 @@ const date = new Date(pubDate).toLocaleDateString('en-GB');
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
-<section class="bg-tertiary-light py-9">
+<section class="bg-tertiary-light py-9" data-testid="blog-hero">
   <div class="max-w-8xl mx-auto flex flex-col gap-4 px-2 pt-4 text-center">
     <p class="font-title">{date}</p>
     <h1 class="font-heading">{title}</h1>

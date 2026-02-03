@@ -17,14 +17,16 @@ const { items = [] } = Astro.props;
 
 <footer class="layout-content | py-7">
   <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
-    <p class="font-body order-2 col-span-1 mt-auto xl:order-1">
-      Built with love. Copyright &copy {date}. All rights reserved.
-    </p>
+    <div class="font-body order-2 col-span-1 mt-auto flex flex-col gap-5 xl:order-1">
+      <p>
+        Built with love. Copyright &copy {date}. All rights reserved
+      </p>
+    </div>
 
     <nav
       id="navigationFooter"
       aria-label="Footer"
-      class="order-1 col-span-2 flex xl:order-2 xl:justify-end"
+      class="order-1 col-span-2 flex flex-col gap-5 xl:order-2 xl:items-end xl:justify-end"
     >
       {
         items?.length > 0 ? (
@@ -56,6 +58,7 @@ const { items = [] } = Astro.props;
           </ul>
         ) : null
       }
+      <p><a href="/privacy"><TextSwap text="Privacy page" class="font-body" /></a></p>
     </nav>
   </div>
 </footer>
