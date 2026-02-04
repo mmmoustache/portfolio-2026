@@ -7,16 +7,18 @@ const scrollToSpy = vi.fn();
 let lastCtorOptions: any = null;
 
 vi.mock('lenis', () => {
-  return {
-    default: vi.fn().mockImplementation((opts) => {
+  class LenisMock {
+    public destroy = vi.fn();
+
+    constructor(opts: any) {
       lastCtorOptions = opts;
-      return {
-        raf: rafSpy,
-        scrollTo: scrollToSpy,
-        destroy: vi.fn(),
-      };
-    }),
-  };
+
+      (this as any).raf = rafSpy;
+      (this as any).scrollTo = scrollToSpy;
+    }
+  }
+
+  return { default: LenisMock };
 });
 
 function setReducedMotion(matches: boolean) {
@@ -37,8 +39,14 @@ function setReducedMotion(matches: boolean) {
 describe('initScrollProvider', () => {
   const rafOriginal = globalThis.requestAnimationFrame;
 
+  // NEW: keep track of the instance so we can destroy it after each test
+  let cleanup: ReturnType<typeof initScrollProvider> | null = null;
+
   beforeEach(() => {
     document.body.innerHTML = '';
+    cleanup = null;
+
+    let rafRunCount = 0;
 
     rafSpy.mockClear();
     scrollToSpy.mockClear();
@@ -47,7 +55,8 @@ describe('initScrollProvider', () => {
     vi.stubGlobal(
       'requestAnimationFrame',
       vi.fn((cb: FrameRequestCallback) => {
-        cb(123);
+        // Run the callback only for the first scheduled frame
+        if (rafRunCount++ === 0) cb(123);
         return 1;
       })
     );
@@ -56,7 +65,16 @@ describe('initScrollProvider', () => {
   });
 
   afterEach(() => {
+    // NEW: remove the click handler + clear window.__lenis via the real destroy()
+    if (cleanup && typeof cleanup === 'object' && 'destroy' in cleanup) {
+      (cleanup as any).destroy();
+    }
+
+    cleanup = null;
+
+    // (optional) keep this as a belt-and-braces cleanup
     delete (window as any).__lenis;
+
     vi.unstubAllGlobals();
     (history.pushState as any).mockRestore?.();
     globalThis.requestAnimationFrame = rafOriginal;
@@ -73,8 +91,8 @@ describe('initScrollProvider', () => {
   it('initializes Lenis once and starts RAF loop', () => {
     setReducedMotion(false);
 
-    const res = initScrollProvider();
-    expect(res).not.toBeNull();
+    cleanup = initScrollProvider();
+    expect(cleanup).not.toBeNull();
     expect(window.__lenis).toBeTruthy();
     expect(rafSpy).toHaveBeenCalledWith(123);
 
@@ -84,7 +102,7 @@ describe('initScrollProvider', () => {
 
   it('uses prevent() to ignore elements inside [data-lenis-prevent]', () => {
     setReducedMotion(false);
-    initScrollProvider();
+    cleanup = initScrollProvider();
 
     const outer = document.createElement('div');
     outer.dataset.lenisPrevent = '';
@@ -102,7 +120,7 @@ describe('initScrollProvider', () => {
 
   it('clicking a[href="#"] scrolls to top via Lenis', () => {
     setReducedMotion(false);
-    initScrollProvider();
+    cleanup = initScrollProvider();
 
     const a = document.createElement('a');
     a.href = '#';
@@ -117,7 +135,7 @@ describe('initScrollProvider', () => {
 
   it('clicking an in-page anchor scrolls to the target element via Lenis', () => {
     setReducedMotion(false);
-    initScrollProvider();
+    cleanup = initScrollProvider();
 
     const section = document.createElement('section');
     section.id = 'thing';
@@ -136,8 +154,10 @@ describe('initScrollProvider', () => {
 
   it('returns a destroy() that removes the click handler and clears window.__lenis', () => {
     setReducedMotion(false);
-    const res = initScrollProvider();
-    if (!res || 'destroy' in res === false) throw new Error('Expected API');
+    cleanup = initScrollProvider();
+
+    const res = cleanup;
+    if (!res || typeof res !== 'object' || !('destroy' in res)) throw new Error('Expected API');
 
     const a = document.createElement('a');
     a.href = '#';
@@ -151,5 +171,8 @@ describe('initScrollProvider', () => {
     a.click();
     expect(scrollToSpy).toHaveBeenCalledTimes(1);
     expect(window.__lenis).toBeUndefined();
+
+    // make sure afterEach doesn't try to destroy twice
+    cleanup = null;
   });
 });

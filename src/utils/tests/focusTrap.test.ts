@@ -113,19 +113,25 @@ describe('createFocusTrap', () => {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <button>First</button>
-      <button>Second</button>
-    `;
+    <button>First</button>
+    <button>Second</button>
+  `;
     document.body.appendChild(container);
 
     createFocusTrap(container);
 
-    outside.focus();
-    expect(document.activeElement).toBe(outside);
+    const first = container.querySelector('button')!;
+
+    const activeSpy = vi
+      .spyOn(document, 'activeElement', 'get')
+      .mockReturnValue(outside as unknown as Element);
 
     const ev = keydown('Tab');
+
+    activeSpy.mockRestore();
+
     expect(ev.defaultPrevented).toBe(true);
-    expect(document.activeElement).toBe(container.querySelector('button'));
+    expect(document.activeElement).toBe(first);
   });
 
   it('focusin outside container is pulled back to first focusable (or fallback)', () => {
@@ -143,8 +149,6 @@ describe('createFocusTrap', () => {
     createFocusTrap(container);
 
     outside.focus();
-    // JSDOM doesn't always automatically dispatch focusin as the browser would,
-    // so we trigger it explicitly.
     fireEvent.focusIn(outside);
 
     expect(document.activeElement).toBe(container.querySelector('button'));
@@ -223,7 +227,6 @@ describe('createFocusTrap', () => {
     const cleanup = createFocusTrap(container, { restoreFocus: false });
 
     cleanup();
-    // it might remain on the inside button; the key is it should not go back to "before"
     expect(document.activeElement).not.toBe(before);
   });
 
@@ -243,7 +246,6 @@ describe('createFocusTrap', () => {
     outside.focus();
     fireEvent.focusIn(outside);
 
-    // If listeners are removed, focus should stay outside.
     expect(document.activeElement).toBe(outside);
   });
 });
