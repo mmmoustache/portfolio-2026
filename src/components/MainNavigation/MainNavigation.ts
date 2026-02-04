@@ -373,13 +373,3 @@ export function initMainNav(scope: ParentNode = document): void {
   els.overlay.addEventListener('click', onOverlayClick);
   els.panel.addEventListener('click', onPanelClick);
 }
-
-function autoInit() {
-  initMainNav(document);
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', autoInit, { once: true });
-} else {
-  autoInit();
-}

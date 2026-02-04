@@ -16,7 +16,6 @@ function trackEventListeners() {
   const originalAdd = proto.addEventListener;
   const originalRemove = proto.removeEventListener;
 
-  // Patch addEventListener globally (document/window/elements)
   proto.addEventListener = function (
     this: EventTarget,
     type: string,
@@ -29,7 +28,6 @@ function trackEventListeners() {
 
   return {
     cleanup() {
-      // Remove in reverse order (safer if handlers depend on others)
       for (let i = added.length - 1; i >= 0; i--) {
         const { target, type, listener, options } = added[i];
         originalRemove.call(target, type, listener, options as any);
@@ -196,8 +194,14 @@ describe('initMainNav', () => {
   });
 
   it('does not throw if required elements are missing', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
     document.body.innerHTML = `<div></div>`;
+
     expect(() => initMainNav()).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+
+    warnSpy.mockRestore();
   });
 
   it('sets --nav-offset based on mobileBar height', () => {

@@ -8,7 +8,7 @@ describe('BannerClip component', () => {
   beforeEach(() => {
     document.body.innerHTML = '';
 
-    Object.defineProperty(globalThis, 'innerHeight', {
+    Object.defineProperty(window, 'innerHeight', {
       configurable: true,
       value: 1000,
       writable: true,
@@ -19,13 +19,22 @@ describe('BannerClip component', () => {
       return 1;
     });
 
-    vi.stubGlobal('requestAnimationFrame', rafSpy);
-    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    Object.defineProperty(globalThis, 'requestAnimationFrame', {
+      configurable: true,
+      value: rafSpy,
+      writable: true,
+    });
+
+    Object.defineProperty(globalThis, 'cancelAnimationFrame', {
+      configurable: true,
+      value: vi.fn(),
+      writable: true,
+    });
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
     vi.restoreAllMocks();
+    document.body.innerHTML = '';
   });
 
   it('does nothing when prefers-reduced-motion is enabled', () => {
