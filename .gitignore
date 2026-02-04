@@ -2,8 +2,9 @@
 dist/
 /test-results
 
-# generated types
+# generated
 .astro/
+coverage
 
 # dependencies
 node_modules/

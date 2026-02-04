@@ -1,173 +1,273 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SwipeImage } from '@/components/SwipeImage/SwipeImage';
 
-vi.mock('@/utils/clamp', () => ({
-  clamp: (n: number, min: number, max: number) => Math.min(max, Math.max(min, n)),
-}));
+function trackEventListeners() {
+  const added: Array<{
+    target: EventTarget;
+    type: string;
+    listener: EventListenerOrEventListenerObject;
+    options?: boolean | AddEventListenerOptions;
+  }> = [];
 
-type IOEntry = Partial<IntersectionObserverEntry> & {
-  isIntersecting: boolean;
-  intersectionRatio: number;
-  target: Element;
-};
+  const proto = EventTarget.prototype;
+  const originalAdd = proto.addEventListener;
+  const originalRemove = proto.removeEventListener;
 
-class MockIntersectionObserver {
-  static instances: MockIntersectionObserver[] = [];
+  proto.addEventListener = function (
+    this: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) {
+    added.push({ target: this, type, listener, options });
+    return originalAdd.call(this, type, listener, options);
+  } as any;
 
-  public callback: IntersectionObserverCallback;
-  public options?: IntersectionObserverInit;
-  public observed = new Set<Element>();
-  public disconnect = vi.fn();
-
-  constructor(cb: IntersectionObserverCallback, options?: IntersectionObserverInit) {
-    this.callback = cb;
-    this.options = options;
-    MockIntersectionObserver.instances.push(this);
-  }
-
-  observe = (el: Element) => {
-    this.observed.add(el);
+  return {
+    cleanup() {
+      for (let i = added.length - 1; i >= 0; i--) {
+        const { target, type, listener, options } = added[i];
+        originalRemove.call(target, type, listener, options as any);
+      }
+      proto.addEventListener = originalAdd;
+      proto.removeEventListener = originalRemove;
+    },
   };
-
-  unobserve = (el: Element) => {
-    this.observed.delete(el);
-  };
-
-  trigger(entries: IOEntry[]) {
-    this.callback(entries as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
-  }
 }
 
-function makeSwipeImageEl(attrs?: { threshold?: string }) {
-  const el = document.createElement('div');
-  el.dataset.swipeImage = '';
-
-  Object.defineProperty(el.dataset, 'swipeImage', {
-    value: '',
-    configurable: true,
+function installRafQueue() {
+  const queue: FrameRequestCallback[] = [];
+  vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+    queue.push(cb);
+    return queue.length;
   });
 
-  if (attrs?.threshold != null) {
-    el.dataset.threshold = attrs.threshold;
+  return {
+    flush(count = Infinity) {
+      let n = 0;
+      while (queue.length && n < count) {
+        const cb = queue.shift()!;
+        cb(0);
+        n++;
+      }
+    },
+  };
+}
+
+type IOInstance = {
+  cb: IntersectionObserverCallback;
+  options?: IntersectionObserverInit;
+  observe: ReturnType<typeof vi.fn>;
+  disconnect: ReturnType<typeof vi.fn>;
+  unobserve: ReturnType<typeof vi.fn>;
+  _targets: Set<Element>;
+  trigger: (entries: Partial<IntersectionObserverEntry>[]) => void;
+};
+
+function installIntersectionObserver() {
+  const instances: IOInstance[] = [];
+
+  class FakeIO {
+    cb: IntersectionObserverCallback;
+    options?: IntersectionObserverInit;
+    observe = vi.fn((el: Element) => this._targets.add(el));
+    disconnect = vi.fn();
+    unobserve = vi.fn((el: Element) => this._targets.delete(el));
+    _targets = new Set<Element>();
+
+    constructor(cb: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+      this.cb = cb;
+      this.options = options;
+      instances.push(this as any);
+    }
+
+    trigger(entries: Partial<IntersectionObserverEntry>[]) {
+      this.cb(entries as IntersectionObserverEntry[], this as any);
+    }
   }
 
-  document.body.appendChild(el);
+  vi.stubGlobal('IntersectionObserver', FakeIO as any);
+
+  return {
+    instances,
+  };
+}
+
+function setupDom(threshold?: string) {
+  document.body.innerHTML = `
+    <div
+      data-swipe-image
+      ${threshold == null ? '' : `data-threshold="${threshold}"`}
+      id="swipe"
+    >
+      <img alt="x" />
+    </div>
+  `;
+
+  const el = document.getElementById('swipe') as HTMLElement;
+
+  el.getBoundingClientRect = vi.fn(() => ({
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
+    toJSON: () => ({}),
+  })) as any;
+
   return el;
 }
 
-function setReadyState(state: DocumentReadyState) {
-  Object.defineProperty(document, 'readyState', {
-    value: state,
-    configurable: true,
-  });
+function resetSwipeGlobals() {
+  (globalThis as any).__SWIPE_REVEAL_INIT__ = undefined;
+  (globalThis as any).__SWIPE_REVEAL_OBS__ = undefined;
 }
 
-describe('SwipeImage', () => {
-  const realIO = globalThis.IntersectionObserver;
-  const realRAF = globalThis.requestAnimationFrame;
+describe('SwipeImage()', () => {
+  let listeners: ReturnType<typeof trackEventListeners>;
+  let raf: ReturnType<typeof installRafQueue>;
+  let io: ReturnType<typeof installIntersectionObserver>;
 
   beforeEach(() => {
-    document.body.innerHTML = '';
+    listeners = trackEventListeners();
+    raf = installRafQueue();
+    io = installIntersectionObserver();
 
-    delete (globalThis as any).__SWIPE_REVEAL_INIT__;
-    delete (globalThis as any).__SWIPE_REVEAL_OBS__;
+    resetSwipeGlobals();
 
-    MockIntersectionObserver.instances = [];
-    globalThis.IntersectionObserver = MockIntersectionObserver as any;
-
-    globalThis.requestAnimationFrame = (cb: FrameRequestCallback) => {
-      cb(performance.now());
-      return 0 as any;
-    };
-
-    setReadyState('complete');
+    vi.spyOn(document, 'readyState', 'get').mockReturnValue('complete');
   });
 
   afterEach(() => {
-    globalThis.IntersectionObserver = realIO;
-    globalThis.requestAnimationFrame = realRAF;
+    listeners.cleanup();
+    vi.restoreAllMocks();
+    document.body.innerHTML = '';
+    resetSwipeGlobals();
   });
 
-  it('initializes only once (global __SWIPE_REVEAL_INIT__ guard)', () => {
-    makeSwipeImageEl();
+  it('is idempotent: calling twice only initialises once', () => {
+    setupDom();
+    SwipeImage();
     SwipeImage();
 
-    const firstCount = MockIntersectionObserver.instances.length;
-    expect(firstCount).toBe(1);
-
-    SwipeImage();
-    expect(MockIntersectionObserver.instances.length).toBe(firstCount);
+    expect(io.instances.length).toBe(1);
   });
 
-  it('observes swipe-image elements and sets data-revealed when threshold is met', () => {
-    const el = makeSwipeImageEl({ threshold: '0.25' });
-
+  it('on init, marks element as swipeInit=true, resets, then arms observer', () => {
+    const el = setupDom();
     SwipeImage();
 
-    expect(MockIntersectionObserver.instances.length).toBe(1);
-    const io = MockIntersectionObserver.instances[0];
-    expect(io.observed.has(el)).toBe(true);
-
-    io.trigger([
-      {
-        target: el,
-        isIntersecting: true,
-        intersectionRatio: 0.1,
-      },
-    ]);
-    expect(el.dataset.revealed).toBeNull();
-
-    io.trigger([
-      {
-        target: el,
-        isIntersecting: true,
-        intersectionRatio: 0.3,
-      },
-    ]);
-
-    expect(el.dataset.revealed).toBe('true');
-    expect(io.disconnect).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not reset already-initialized elements on subsequent runs (without forceReset)', () => {
-    const el = makeSwipeImageEl({ threshold: '0.25' });
-    SwipeImage();
-
-    const io1 = MockIntersectionObserver.instances[0];
-    io1.trigger([{ target: el, isIntersecting: true, intersectionRatio: 1 }]);
-    expect(el.dataset.revealed).toBe('true');
     expect(el.dataset.swipeInit).toBe('true');
+    expect(el.dataset.resetting).toBe('true');
+    expect(el.dataset.revealed).toBeUndefined();
 
-    document.dispatchEvent(new Event('astro:page-load'));
+    expect(io.instances.length).toBe(1);
+    expect(io.instances[0].observe).toHaveBeenCalledTimes(1);
+    expect(io.instances[0].observe).toHaveBeenCalledWith(el);
+
+    raf.flush(1);
+    expect(el.dataset.resetting).toBeUndefined();
+  });
+
+  it('reveals when intersectionRatio >= threshold (default 0.25)', () => {
+    const el = setupDom();
+    SwipeImage();
+
+    const obs = io.instances[0];
+
+    obs.trigger([{ isIntersecting: true, intersectionRatio: 0.2, target: el }]);
+    raf.flush();
+    expect(el.dataset.revealed).toBeUndefined();
+    expect(obs.disconnect).not.toHaveBeenCalled();
+
+    obs.trigger([{ isIntersecting: true, intersectionRatio: 0.3, target: el }]);
+    expect(el.dataset.revealed).toBeUndefined();
+    raf.flush(1);
+    expect(el.dataset.revealed).toBe('true');
+    expect(obs.disconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it('respects per-element data-threshold (e.g. 0.8)', () => {
+    const el = setupDom('0.8');
+    SwipeImage();
+
+    const obs = io.instances[0];
+
+    obs.trigger([{ isIntersecting: true, intersectionRatio: 0.79, target: el }]);
+    raf.flush();
+    expect(el.dataset.revealed).toBeUndefined();
+
+    obs.trigger([{ isIntersecting: true, intersectionRatio: 0.8, target: el }]);
+    raf.flush(1);
     expect(el.dataset.revealed).toBe('true');
   });
 
-  it('forces a reset on pageshow persisted=true', () => {
-    const el = makeSwipeImageEl({ threshold: '0.25' });
+  it('clamps invalid thresholds via behaviour: data-threshold="2" acts like 1', () => {
+    const el = setupDom('2');
     SwipeImage();
 
-    const io1 = MockIntersectionObserver.instances[0];
-    io1.trigger([{ target: el, isIntersecting: true, intersectionRatio: 1 }]);
+    const obs = io.instances[0];
+
+    obs.trigger([{ isIntersecting: true, intersectionRatio: 0.99, target: el }]);
+    raf.flush();
+    expect(el.dataset.revealed).toBeUndefined();
+
+    obs.trigger([{ isIntersecting: true, intersectionRatio: 1, target: el }]);
+    raf.flush(1);
+    expect(el.dataset.revealed).toBe('true');
+  });
+
+  it('pageshow persisted=true force-resets (sets resetting again + clears revealed)', () => {
+    const el = setupDom('0');
+    SwipeImage();
+
+    const obs1 = io.instances[0];
+
+    obs1.trigger([{ isIntersecting: true, intersectionRatio: 1, target: el }]);
+
+    raf.flush(2);
+
     expect(el.dataset.revealed).toBe('true');
 
-    const evt = new Event('pageshow') as PageTransitionEvent;
-    Object.defineProperty(evt, 'persisted', { value: true });
-
+    const evt = new PageTransitionEvent('pageshow', { persisted: true });
     globalThis.dispatchEvent(evt);
 
-    expect(el.dataset.revealed).toBeNull();
-    expect(el.dataset.resetting).toBeTruthy();
+    expect(el.dataset.resetting).toBe('true');
+    expect(el.dataset.revealed).toBeUndefined();
+
+    raf.flush(1);
+    expect(el.dataset.resetting).toBeUndefined();
   });
 
-  it('waits for DOMContentLoaded if document.readyState is loading', () => {
-    setReadyState('loading');
-
-    makeSwipeImageEl();
+  it('astro:page-load reruns and re-arms observer (disconnects old observer)', () => {
+    const el = setupDom();
     SwipeImage();
 
-    expect(MockIntersectionObserver.instances.length).toBe(0);
+    const firstObs = io.instances[0];
+
+    document.dispatchEvent(new Event('astro:page-load'));
+
+    expect(firstObs.disconnect).toHaveBeenCalledTimes(1);
+    expect(io.instances.length).toBe(2);
+    expect(io.instances[1].observe).toHaveBeenCalledWith(el);
+  });
+
+  it('when document is loading, waits for DOMContentLoaded', () => {
+    vi.restoreAllMocks();
+    vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
+
+    const el = setupDom();
+    SwipeImage();
+
+    expect(io.instances.length).toBe(0);
+    expect(el.dataset.swipeInit).toBeUndefined();
 
     document.dispatchEvent(new Event('DOMContentLoaded'));
-    expect(MockIntersectionObserver.instances.length).toBe(1);
+
+    expect(io.instances.length).toBe(1);
+    expect(el.dataset.swipeInit).toBe('true');
   });
 });
