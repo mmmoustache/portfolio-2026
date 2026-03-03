@@ -8,6 +8,8 @@ function run(cmd, args, opts = {}) {
   });
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function fetchJSON(url) {
   const res = await fetch(url, {
     headers: {
@@ -15,8 +17,31 @@ async function fetchJSON(url) {
       Accept: 'application/vnd.github+json',
     },
   });
-  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${url}`);
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`GitHub API ${res.status}: ${url}\n${body}`);
+  }
   return res.json();
+}
+
+async function findSuccessTargetUrl(owner, repo, sha) {
+  const deployments = await fetchJSON(
+    `https://api.github.com/repos/${owner}/${repo}/deployments?sha=${sha}&per_page=100`
+  );
+
+  if (!deployments.length) return null;
+
+  for (const dep of deployments) {
+    const statuses = await fetchJSON(
+      `https://api.github.com/repos/${owner}/${repo}/deployments/${dep.id}/statuses?per_page=100`
+    );
+
+    const success = statuses.find((s) => s.state === 'success' && s.target_url);
+    if (success?.target_url) return success.target_url.replace(/\/$/, '');
+  }
+
+  return null;
 }
 
 async function getVercelPreviewUrlFromGitHub() {
@@ -27,20 +52,32 @@ async function getVercelPreviewUrlFromGitHub() {
 
   const [owner, repo] = GITHUB_REPOSITORY.split('/');
 
-  const deployments = await fetchJSON(
-    `https://api.github.com/repos/${owner}/${repo}/deployments?sha=${GITHUB_SHA}`
-  );
+  const maxWaitMs = Number(process.env.LH_PREVIEW_MAX_WAIT_MS ?? 300_000); // 5 min
+  const intervalMs = Number(process.env.LH_PREVIEW_POLL_MS ?? 10_000); // 10 sec
 
-  for (const dep of deployments) {
-    const statuses = await fetchJSON(
-      `https://api.github.com/repos/${owner}/${repo}/deployments/${dep.id}/statuses`
+  const started = Date.now();
+  let attempt = 0;
+
+  while (Date.now() - started < maxWaitMs) {
+    attempt += 1;
+    const url = await findSuccessTargetUrl(owner, repo, GITHUB_SHA);
+
+    if (url) {
+      console.log(`[lh] Found Vercel preview URL on attempt ${attempt}: ${url}`);
+      return url;
+    }
+
+    console.log(
+      `[lh] No successful Vercel deployment status yet for this SHA (attempt ${attempt}). Retrying in ${Math.round(
+        intervalMs / 1000
+      )}s...`
     );
-
-    const success = statuses.find((s) => s.state === 'success' && s.target_url);
-    if (success?.target_url) return success.target_url.replace(/\/$/, '');
+    await sleep(intervalMs);
   }
 
-  throw new Error('No successful Vercel deployment status found yet for this SHA.');
+  throw new Error(
+    `No successful Vercel deployment status found for this SHA after ${Math.round(maxWaitMs / 1000)}s.`
+  );
 }
 
 function urlsFor(base) {
@@ -57,20 +94,18 @@ async function main() {
 
   if (!baseUrl) {
     throw new Error(
-      'No base URL for Lighthouse. Set LH_BASE_URL (local) or run in GitHub Actions PR (preview URL).'
+      'No base URL for Lighthouse. Set LH_BASE_URL (local) or run in GitHub Actions PR.'
     );
   }
 
   const urls = urlsFor(baseUrl);
 
-  const args = [
+  await run('npx', [
     'lhci',
     'autorun',
     '--config=./lighthouserc.json',
     ...urls.flatMap((u) => [`--collect.url=${u}`]),
-  ];
-
-  await run('npx', args);
+  ]);
 }
 
 main().catch((err) => {

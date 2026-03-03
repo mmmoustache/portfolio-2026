@@ -62,3 +62,5 @@ jobs:
         run: npm run lh:ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LH_PREVIEW_MAX_WAIT_MS: 300000
+          LH_PREVIEW_POLL_MS: 10000
