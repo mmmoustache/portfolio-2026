@@ -1,6 +1,7 @@
-import { test, expect } from '@playwright/test';
-import { ROUTES } from './helpers/routes';
+import { expect, test } from '@playwright/test';
+
 import { expectLayout } from './helpers/expectLayout';
+import { ROUTES } from './helpers/routes';
 
 test.describe('Blog journeys', () => {
   test('User can open the first blog post from the listing', async ({ page }) => {

@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+
 import { expectLayout } from '@/e2e/helpers/expectLayout';
 import { ROUTES } from '@/e2e/helpers/routes';
 

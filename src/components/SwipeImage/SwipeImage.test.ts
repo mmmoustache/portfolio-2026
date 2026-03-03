@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { SwipeImage } from '@/components/SwipeImage/SwipeImage';
 
 function trackEventListeners() {

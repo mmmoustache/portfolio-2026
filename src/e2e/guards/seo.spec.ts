@@ -2,8 +2,8 @@
  * SEO
  * Basic test to check specific meta tags are included in page
  ***/
+import { expect, test } from '@playwright/test';
 
-import { test, expect } from '@playwright/test';
 import { ROUTES } from '@/e2e/helpers/routes';
 
 test.describe('SEO', () => {

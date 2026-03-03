@@ -1,12 +1,11 @@
 ---
 import type { GetStaticPaths, Page } from 'astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 
 import BlogTile from '@/components/BlogTile/BlogTile.astro';
-import TextSwap from '@/components/TextSwap/TextSwap.astro';
-
-import Layout from '@/layouts/Layout.astro';
 import Dot from '@/components/Dot/Dot.astro';
+import TextSwap from '@/components/TextSwap/TextSwap.astro';
+import Layout from '@/layouts/Layout.astro';
 
 type BlogEntry = CollectionEntry<'blog'>;
 

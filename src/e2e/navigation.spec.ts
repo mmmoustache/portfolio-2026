@@ -1,6 +1,7 @@
-import { test, expect } from '@playwright/test';
-import { ROUTES } from '@/e2e/helpers/routes';
+import { expect, test } from '@playwright/test';
+
 import { expectLayout } from '@/e2e/helpers/expectLayout';
+import { ROUTES } from '@/e2e/helpers/routes';
 
 test.describe('Navigation', () => {
   test('Nav can reach Blog listing', async ({ page }) => {

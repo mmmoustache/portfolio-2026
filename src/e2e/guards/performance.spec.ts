@@ -2,8 +2,8 @@
  * Performance
  * Basic test to not exceed file size budget
  ***/
+import { expect, test } from '@playwright/test';
 
-import { test, expect } from '@playwright/test';
 import { ROUTES } from '@/e2e/helpers/routes';
 
 test('Homepage responds with 200 and reasonable HTML size', async ({ page }) => {

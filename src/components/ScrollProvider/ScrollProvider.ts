@@ -1,5 +1,6 @@
-import { prefersReducedMotion } from '@/utils/prefersReduceMotion';
 import Lenis from 'lenis';
+
+import { prefersReducedMotion } from '@/utils/prefersReduceMotion';
 
 export type InitScrollProviderOptions = {
   lerp?: number;

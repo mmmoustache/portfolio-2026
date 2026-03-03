@@ -1,6 +1,7 @@
-import { test, expect } from '@playwright/test';
-import { ROUTES } from '@/e2e/helpers/routes';
+import { expect, test } from '@playwright/test';
+
 import { expectLayout } from '@/e2e/helpers/expectLayout';
+import { ROUTES } from '@/e2e/helpers/routes';
 
 test.describe('Accessibility test', () => {
   test('Pages have a main landmark and a single H1', async ({ page }) => {

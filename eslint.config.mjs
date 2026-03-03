@@ -1,24 +1,59 @@
-import astro from 'eslint-plugin-astro';
+import astroPlugin from 'eslint-plugin-astro';
+import astroParser from 'astro-eslint-parser';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
-  ...astro.configs.recommended,
+  ...astroPlugin.configs.recommended,
   {
-    files: ['**/*.{ts,tsx,js,jsx}'],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaVersion: 'latest',
         sourceType: 'module',
+        ecmaVersion: 'latest',
       },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
+      'simple-import-sort': simpleImportSort,
     },
-    rules: {},
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+    },
   },
-
+  {
+    files: ['**/*.{js,jsx}'],
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+    },
+  },
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astroParser,
+      parserOptions: {
+        parser: tsParser,
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+        extraFileExtensions: ['.astro'],
+      },
+    },
+    plugins: {
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+    },
+  },
   {
     ignores: [
       'dist/**',
@@ -29,4 +64,5 @@ export default [
       'test-results/**',
     ],
   },
+  prettierConfig,
 ];

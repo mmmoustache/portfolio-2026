@@ -1,7 +1,8 @@
 ---
+import { type CollectionEntry, getCollection } from 'astro:content';
+
 import Dot from '@/components/Dot/Dot.astro';
 import Layout from '@/layouts/Layout.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
 
 type Props = CollectionEntry<'pages'>;
 

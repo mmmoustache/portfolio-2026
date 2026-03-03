@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent } from '@testing-library/dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { initMainNav } from '@/components/MainNavigation/MainNavigation';
 
 type MediaQueryListener = (e: MediaQueryListEvent) => void;

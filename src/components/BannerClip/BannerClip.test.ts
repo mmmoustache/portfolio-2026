@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { BannerClip } from '@/components/BannerClip/BannerClip';
 import { setMatchMedia } from '@/utils/setMatchMedia';
 

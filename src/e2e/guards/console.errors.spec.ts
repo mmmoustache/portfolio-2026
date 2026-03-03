@@ -2,8 +2,8 @@
  * Console Errors
  * This file is to test for any console errors
  ***/
+import { expect, test } from '@playwright/test';
 
-import { test, expect } from '@playwright/test';
 import { ROUTES } from '@/e2e/helpers/routes';
 
 test('No console errors on key pages', async ({ page }) => {

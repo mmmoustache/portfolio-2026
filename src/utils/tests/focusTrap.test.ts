@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent } from '@testing-library/dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createFocusTrap } from '@/utils/focusTrap';
 
 function keydown(key: string, opts: Partial<KeyboardEventInit> = {}) {
