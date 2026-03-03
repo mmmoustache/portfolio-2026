@@ -3,6 +3,7 @@ import astroParser from 'astro-eslint-parser';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   ...astroPlugin.configs.recommended,
@@ -63,4 +64,5 @@ export default [
       'test-results/**',
     ],
   },
+  prettierConfig,
 ];
