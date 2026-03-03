@@ -74,10 +74,3 @@ jobs:
           PREVIEW="${{ steps.deploy.outputs.preview_url }}"
           echo "LH base URL is: [$PREVIEW]"
           LH_BASE_URL="$PREVIEW" node src/scripts/lighthouse.mjs
-
-      - name: Upload LHCI results
-        uses: actions/upload-artifact@v4
-        with:
-          name: lhci-report
-          path: .lighthouseci/**
-          if-no-files-found: warn
