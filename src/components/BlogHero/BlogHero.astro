@@ -19,9 +19,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
     <h1 class="font-heading">{title}</h1>
     <div class="flex justify-center gap-3">
       <p class="font-body">{duration} minute read</p>
-      <span class="text-tertiary">•</span>
+      <span class="text-tertiary" aria-hidden="true">•</span>
       <ShareButton url={canonicalURL} />
-      <span class="text-tertiary">•</span>
+      <span class="text-tertiary" aria-hidden="true">•</span>
       <a href="/blog/" class="font-body hover:text-tertiary">Back to blog</a>
     </div>
   </div>

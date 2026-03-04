@@ -27,7 +27,7 @@ const { title, pubDate, listingImage, duration } = post.data;
 <Layout id="post">
   <BlogHero title={title} pubDate={pubDate} duration={Number(duration)} />
   <article class="grid grid-cols-4">
-    <aside class="col-span-4 xl:col-span-1">
+    <section class="col-span-4 xl:col-span-1">
       <nav class="sticky top-0 mt-2 px-5 py-4 xl:mt-9" aria-label="Contents">
         <details class="border-tertiary flex flex-col border px-5 py-4">
           <summary class="relative flex cursor-pointer items-center justify-between"
@@ -51,15 +51,15 @@ const { title, pubDate, listingImage, duration } = post.data;
           </ol>
         </details>
       </nav>
-    </aside>
+    </section>
     <section
       class="body-text col-span-4 flex flex-col gap-6 px-5 py-5 xl:col-span-2 xl:col-start-2 xl:py-9"
     >
       <Content />
     </section>
-    <aside class="-mt-8 hidden p-6 xl:block">
+    <section class="-mt-8 hidden p-6 xl:block">
       <img src={listingImage?.src} alt="A decorative, scenic image" />
-    </aside>
+    </section>
   </article>
 </Layout>
 
