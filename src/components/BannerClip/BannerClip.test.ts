@@ -42,14 +42,14 @@ describe('BannerClip component', () => {
     setMatchMedia(true);
 
     document.body.innerHTML = `
-      <figure data-banner-clip data-initial-inset="30" data-initial-scale="1.15">
+      <section data-banner-clip data-initial-inset="30" data-initial-scale="1.15">
         <div class="banner-clip__inner"></div>
-      </figure>
+      </section>
     `;
 
     BannerClip();
 
-    const figure = document.querySelector('figure') as HTMLElement;
+    const figure = document.querySelector('section') as HTMLElement;
     const inner = document.querySelector('.banner-clip__inner') as HTMLElement;
 
     expect(figure.dataset.hasInitialized).toBeUndefined();
@@ -62,17 +62,17 @@ describe('BannerClip component', () => {
     setMatchMedia(false);
 
     document.body.innerHTML = `
-      <figure
+      <section
         data-banner-clip
         data-initial-inset="30"
         data-initial-scale="1.15"
         data-ease="0.25"
       >
         <div class="banner-clip__inner"></div>
-      </figure>
+      </section>
     `;
 
-    const figure = document.querySelector('figure') as HTMLElement;
+    const figure = document.querySelector('section') as HTMLElement;
     const inner = document.querySelector('.banner-clip__inner') as HTMLElement;
 
     vi.spyOn(figure, 'getBoundingClientRect').mockReturnValue({
@@ -104,17 +104,17 @@ describe('BannerClip component', () => {
     setMatchMedia(false);
 
     document.body.innerHTML = `
-      <figure
+      <section
         data-banner-clip
         data-initial-inset="30"
         data-initial-scale="1.15"
         data-ease="0.25"
       >
         <div class="banner-clip__inner"></div>
-      </figure>
+      </section>
     `;
 
-    const figure = document.querySelector('figure') as HTMLElement;
+    const figure = document.querySelector('section') as HTMLElement;
     const inner = document.querySelector('.banner-clip__inner') as HTMLElement;
 
     const rectSpy = vi.spyOn(figure, 'getBoundingClientRect').mockReturnValue({

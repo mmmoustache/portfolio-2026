@@ -12,7 +12,7 @@ const { items } = Astro.props;
   {
     items?.map((tool: Tool) => (
       <li class="col-span-1 mx-auto flex max-w-37.5 flex-col gap-3 sm:mx-0">
-        <figure>
+        <span class="block">
           <img
             src={`/logos/${tool.id}.svg`}
             alt={`Logo of ${tool.name}`}
@@ -20,7 +20,7 @@ const { items } = Astro.props;
             height="50"
             width="50"
           />
-        </figure>
+        </span>
         <span class="font-body block w-full text-center">{tool.name}</span>
       </li>
     ))

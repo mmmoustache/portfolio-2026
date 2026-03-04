@@ -14,7 +14,7 @@ const {
 } = Astro.props;
 ---
 
-<figure
+<section
   class={`banner-clip | w-full | ${className}`}
   data-banner-clip
   data-initial-inset={initialInsetPercentage}
@@ -27,7 +27,7 @@ const {
   >
     <slot />
   </div>
-</figure>
+</section>
 
 <style>
   .banner-clip__inner {

@@ -25,7 +25,12 @@ const { title, text, items } = Astro.props;
         {
           items.map((item: WorkTileProps, index) => (
             <li class="work-promo-list-item | grid gap-4">
-              <span class="text-tertiary font-heading block leading-3">{index + 1}.</span>
+              <span class="text-primary-heavy font-heading flex leading-3">
+                {index + 1}
+                <span aria-hidden="true" class="text-tertiary">
+                  .
+                </span>
+              </span>
               <WorkTile title={item.title} text={item.text} href={item.href} />
             </li>
           ))
