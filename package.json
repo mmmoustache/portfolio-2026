@@ -67,7 +67,7 @@
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "start-server-and-test": "^2.1.5",
-    "style-dictionary": "^5.1.1",
+    "style-dictionary": "^5.3.3",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   }
