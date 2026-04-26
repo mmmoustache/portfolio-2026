@@ -22,7 +22,7 @@ The site is a static, SEO-friendly Astro project deploying to Vercel. Key featur
 
 ### Prerequisites
 
-- Node.js 20+ (tested on macOS Monterey/vent)
+- Node.js 22.12.0 or newer
 - `npm` (comes with Node) or `pnpm`/`yarn` (if you prefer)
 - Git (to clone the repo)
 
@@ -32,6 +32,9 @@ The site is a static, SEO-friendly Astro project deploying to Vercel. Key featur
 # clone & navigate
 git clone https://github.com/jackcoventry/portfolio-2026.git
 cd portfolio-2026
+
+# use the project Node version
+nvm use
 
 # install dependencies
 npm install
@@ -117,7 +120,7 @@ npm run preview
 - **astro** – the static site generator
 - **tailwindcss** & `@tailwindcss/vite` – utility CSS framework with Vite plugin
 - **@vercel/analytics** – analytics injection for Vercel
-- **lenis** – smooth-scrolling library used in multiple components
+- **lenis** – smooth-scrolling library used on the homepage experience
 - **nanostores** – lightweight state management library
 
 ### Dev
@@ -156,7 +159,7 @@ This project currently has **no license file**. Add a `LICENSE` (e.g. [MIT](http
 
 | Requirement         | Notes                     |
 | ------------------- | ------------------------- |
-| Node.js             | >=20 (LTS)                |
+| Node.js             | >=22.12.0                 |
 | npm/yarn/pnpm       | package manager of choice |
 | macOS/Linux/Windows | supported in dev          |
 | Git                 | for version control       |
