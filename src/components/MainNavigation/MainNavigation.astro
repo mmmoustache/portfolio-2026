@@ -172,6 +172,13 @@ const { items = [] } = Astro.props;
       #mobileLogo.js-ready {
         transition: none;
       }
+
+      #mobileBar,
+      #mobileMenu,
+      #menuToggle [data-line='top'],
+      #menuToggle [data-line='bottom'] {
+        transition: none !important;
+      }
     }
 
     #menuToggle [data-line='top'] {

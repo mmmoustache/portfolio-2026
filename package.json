@@ -19,6 +19,7 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "verify:browser": "npm run test:e2e && npm run lh:local",
     "check:routes": "node src/scripts/check-required-routes.mjs",
     "check:links": "node src/scripts/check-internal-links.mjs",
     "verify": "npm run prettier && npm run lint && npm run typecheck && npm run test:run && npm run bundle:budget:ci",
