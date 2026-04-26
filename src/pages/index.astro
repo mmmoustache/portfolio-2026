@@ -3,12 +3,30 @@ import Biography from '@/components/Biography/Biography.astro';
 import BlogPromo from '@/components/BlogPromo/BlogPromo.astro';
 import Introduction from '@/components/Introduction/Introduction.astro';
 import WorkPromo from '@/components/WorkPromo/WorkPromo.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts/consts';
+import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '@/consts/consts';
 import data from '@/data/homepage.json';
 import Layout from '@/layouts/Layout.astro';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: Astro.site?.toString(),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: SITE_AUTHOR,
+    jobTitle: 'Web engineer',
+    description: SITE_DESCRIPTION,
+    url: Astro.site?.toString(),
+  },
+];
 ---
 
-<Layout id="home" title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<Layout id="home" title={SITE_TITLE} description={SITE_DESCRIPTION} schema={schema}>
   <Introduction title={data?.introduction?.title} />
   <Biography title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
   <WorkPromo title={data?.work?.title} text={data?.work?.text} items={data?.work?.items} />

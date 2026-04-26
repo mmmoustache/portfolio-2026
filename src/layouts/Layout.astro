@@ -15,10 +15,23 @@ type Props = {
   description?: string;
   id?: string;
   image?: ImageMetadata;
+  ogType?: 'article' | 'website';
+  publishedTime?: Date;
+  schema?: Record<string, unknown> | Array<Record<string, unknown>>;
   title?: string;
+  updatedTime?: Date;
 };
 
-const { id, title = SITE_TITLE, description = SITE_DESCRIPTION, image } = Astro.props as Props;
+const {
+  id,
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  image,
+  ogType,
+  publishedTime,
+  schema,
+  updatedTime,
+} = Astro.props as Props;
 
 const isVercel = Boolean(process.env.VERCEL);
 const isProd = import.meta.env.PROD;
@@ -28,7 +41,15 @@ const enableAnalytics = isProd && isVercel;
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} image={image} />
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      ogType={ogType}
+      publishedTime={publishedTime}
+      schema={schema}
+      updatedTime={updatedTime}
+    />
   </head>
   <body id="body">
     <MainNavigation items={data.main} />

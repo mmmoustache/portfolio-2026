@@ -18,12 +18,20 @@ export async function getStaticPaths() {
 const { entry } = Astro.props as { entry: Props };
 const { Content } = await render(entry);
 const { data } = entry;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: data.title,
+  description: data.description ?? SITE_DESCRIPTION,
+  url: Astro.url.toString(),
+};
 ---
 
 <Layout
   id="page"
   title={`${data.title} | ${SITE_TITLE}`}
   description={data.description ?? SITE_DESCRIPTION}
+  schema={schema}
 >
   <section class="bg-primary-light grid grid-cols-1 items-center overflow-hidden px-5 py-7">
     <div class="mx-auto p-7">

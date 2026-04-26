@@ -1,8 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 
 import BlogHero from '@/components/BlogHero/BlogHero.astro';
-import { SITE_TITLE } from '@/consts/consts';
+import { SITE_AUTHOR, SITE_TITLE } from '@/consts/consts';
 import Layout from '@/layouts/Layout.astro';
 
 type Props = CollectionEntry<'blog'>;
@@ -22,10 +23,33 @@ export async function getStaticPaths() {
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
-const { title, pubDate, listingImage, duration, description } = post.data;
+const { title, pubDate, updatedDate, listingImage, duration, description } = post.data;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  image: listingImage ? [new URL(listingImage.src, Astro.site ?? Astro.url).toString()] : undefined,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  author: {
+    '@type': 'Person',
+    name: SITE_AUTHOR,
+  },
+  mainEntityOfPage: Astro.url.toString(),
+};
 ---
 
-<Layout id="post" title={`${title} | ${SITE_TITLE}`} description={description} image={listingImage}>
+<Layout
+  id="post"
+  title={`${title} | ${SITE_TITLE}`}
+  description={description}
+  image={listingImage}
+  ogType="article"
+  publishedTime={pubDate}
+  updatedTime={updatedDate ?? pubDate}
+  schema={schema}
+>
   <BlogHero title={title} pubDate={pubDate} duration={Number(duration)} />
   <article class="grid grid-cols-4">
     <section class="col-span-4 xl:col-span-1">
@@ -61,14 +85,12 @@ const { title, pubDate, listingImage, duration, description } = post.data;
     <section class="-mt-8 hidden p-6 xl:block">
       {
         listingImage && (
-          <img
-            src={listingImage.src}
+          <Image
+            src={listingImage}
             alt=""
-            aria-hidden="true"
-            width={listingImage.width}
-            height={listingImage.height}
+            widths={[320, 480, 640]}
+            sizes="(min-width: 1280px) 20rem, 0px"
             loading="lazy"
-            decoding="async"
           />
         )
       }
