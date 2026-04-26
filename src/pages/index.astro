@@ -26,7 +26,13 @@ const schema = [
 ];
 ---
 
-<Layout id="home" title={SITE_TITLE} description={SITE_DESCRIPTION} schema={schema}>
+<Layout
+  id="home"
+  title={SITE_TITLE}
+  description={SITE_DESCRIPTION}
+  schema={schema}
+  enableSmoothScroll={true}
+>
   <Introduction title={data?.introduction?.title} />
   <Biography title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
   <WorkPromo title={data?.work?.title} text={data?.work?.text} items={data?.work?.items} />

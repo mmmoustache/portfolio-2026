@@ -29,9 +29,9 @@ test.describe('Accessibility test', () => {
     await expect(skip.first()).toBeFocused();
 
     await skip.first().press('Enter');
-    await expect(page).toHaveURL(/#content/);
 
-    // Content anchor exists
-    await expect(page.locator('#content')).toBeVisible();
+    const content = page.locator('#content');
+    await expect(content).toBeVisible();
+    await expect(content).toBeFocused();
   });
 });

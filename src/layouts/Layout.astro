@@ -13,6 +13,7 @@ import data from '@/data/navigation.json';
 
 type Props = {
   description?: string;
+  enableSmoothScroll?: boolean;
   id?: string;
   image?: ImageMetadata;
   ogType?: 'article' | 'website';
@@ -26,6 +27,7 @@ const {
   id,
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
+  enableSmoothScroll = false,
   image,
   ogType,
   publishedTime,
@@ -55,7 +57,7 @@ const enableAnalytics = isProd && isVercel;
     <MainNavigation items={data.main} />
     <main id="content" tabindex="-1" data-testid="main" data-layout={id}>
       <slot />
-      <ScrollProvider />
+      {enableSmoothScroll && <ScrollProvider />}
     </main>
     <Footer items={data.main} />
     {enableAnalytics && <Analytics />}
