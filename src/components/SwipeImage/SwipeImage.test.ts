@@ -123,8 +123,8 @@ function setupDom(threshold?: string) {
 }
 
 function resetSwipeGlobals() {
-  (globalThis as any).__SWIPE_REVEAL_INIT__ = undefined;
-  (globalThis as any).__SWIPE_REVEAL_OBS__ = undefined;
+  globalThis.__SWIPE_REVEAL_INIT__ = undefined;
+  globalThis.__SWIPE_REVEAL_OBS__ = undefined;
 }
 
 describe('SwipeImage()', () => {

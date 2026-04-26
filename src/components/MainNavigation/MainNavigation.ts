@@ -1,4 +1,5 @@
 import { dedupe } from '@/utils/dedupe';
+import { isHTMLButtonElement, isHTMLElement, queryOptional, queryRequired } from '@/utils/dom';
 import { getFocusable } from '@/utils/focusTrap';
 
 function isTypingTarget(el: Element | null): boolean {
@@ -32,39 +33,6 @@ type InertElement = HTMLElement & {
 
 function warnMainNav(message: string, detail?: unknown) {
   console.warn(`[MainNav] ${message}`, detail);
-}
-
-function isHTMLElement(el: Element | null): el is HTMLElement {
-  return el instanceof HTMLElement;
-}
-
-function isHTMLButtonElement(el: Element | null): el is HTMLButtonElement {
-  return el instanceof HTMLButtonElement;
-}
-
-function queryRequired<T extends Element>(
-  root: ParentNode,
-  selector: string,
-  isExpected: (el: Element | null) => el is T,
-  expectedLabel: string
-): T {
-  const el = root.querySelector(selector);
-  if (!isExpected(el)) {
-    throw new Error(`Missing or invalid ${expectedLabel}: ${selector}`);
-  }
-
-  return el;
-}
-
-function queryOptional<T extends Element>(
-  root: ParentNode,
-  selector: string,
-  isExpected: (el: Element | null) => el is T
-): T | null {
-  const el = root.querySelector(selector);
-  if (el == null) return null;
-
-  return isExpected(el) ? el : null;
 }
 
 function collectEls(scope: ParentNode): NavEls {

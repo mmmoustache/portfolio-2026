@@ -1,23 +1,11 @@
 import Lenis from 'lenis';
 
+import { findHashTarget } from '@/utils/dom';
 import { prefersReducedMotion } from '@/utils/prefersReduceMotion';
 
 export type InitScrollProviderOptions = {
   lerp?: number;
 };
-
-function findHashTarget(hash: string): HTMLElement | null {
-  const id = hash.slice(1);
-  if (!id) return null;
-
-  try {
-    const decodedId = decodeURIComponent(id);
-    const target = document.getElementById(decodedId);
-    return target instanceof HTMLElement ? target : null;
-  } catch {
-    return null;
-  }
-}
 
 export function initScrollProvider(options: InitScrollProviderOptions = {}) {
   if (prefersReducedMotion()) return null;

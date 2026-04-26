@@ -1,4 +1,5 @@
 import { clamp } from '@/utils/clamp';
+import { coerceClampedNumber } from '@/utils/coerceNumber';
 import { prefersReducedMotion } from '@/utils/prefersReduceMotion';
 
 type BannerClipDataset = {
@@ -11,18 +12,6 @@ type BannerClipDataset = {
 type BannerClipEl = HTMLElement & {
   dataset: DOMStringMap & BannerClipDataset;
 };
-
-function parseNumber(
-  value: string | undefined,
-  fallback: number,
-  opts?: { min?: number; max?: number }
-): number {
-  const valueAsInt = value == null ? Number.NaN : Number(value);
-  const safeInt = Number.isFinite(valueAsInt) ? valueAsInt : fallback;
-  const min = opts?.min ?? -Infinity;
-  const max = opts?.max ?? Infinity;
-  return clamp(safeInt, min, max);
-}
 
 function isBannerClipEl(el: Element): el is BannerClipEl {
   return el instanceof HTMLElement && Object.hasOwn(el.dataset, 'bannerClip');
@@ -50,9 +39,9 @@ export function BannerClip(): void {
 
     el.dataset.hasInitialized = 'true';
 
-    const initialInset = parseNumber(el.dataset.initialInset, 30, { min: 0, max: 100 });
-    const initialScale = parseNumber(el.dataset.initialScale, 1.15, { min: 1, max: 3 });
-    const ease = parseNumber(el.dataset.ease, 0.12, { min: 0.02, max: 0.25 });
+    const initialInset = coerceClampedNumber(el.dataset.initialInset, 30, { min: 0, max: 100 });
+    const initialScale = coerceClampedNumber(el.dataset.initialScale, 1.15, { min: 1, max: 3 });
+    const ease = coerceClampedNumber(el.dataset.ease, 0.12, { min: 0.02, max: 0.25 });
 
     let currentInset = initialInset;
     let targetInset = initialInset;

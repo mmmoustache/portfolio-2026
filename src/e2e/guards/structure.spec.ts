@@ -26,6 +26,23 @@ test.describe('Rendered structure guards', () => {
     await expect(target).toBeVisible();
   });
 
+  test('blog table of contents works by keyboard', async ({ page }) => {
+    await page.goto(ROUTES.post);
+
+    const toc = page.getByRole('navigation', { name: /Contents/i });
+    const firstLink = toc.getByRole('link').first();
+    const href = await firstLink.getAttribute('href');
+
+    expect(href).toMatch(/^#/);
+
+    await firstLink.focus();
+    await expect(firstLink).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    await expect(page).toHaveURL(new RegExp(`${href}$`));
+    await expect(page.locator(href ?? '')).toBeVisible();
+  });
+
   test('external links that open a new tab include rel protections', async ({ page }) => {
     await page.goto(ROUTES.home);
 

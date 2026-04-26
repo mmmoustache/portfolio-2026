@@ -34,4 +34,14 @@ test.describe('Accessibility test', () => {
     await expect(content).toBeVisible();
     await expect(content).toBeFocused();
   });
+
+  test('Skip link still works with homepage smooth scroll enabled', async ({ page }) => {
+    await page.goto(ROUTES.home);
+    await expectLayout(page, 'home');
+
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+
+    await expect(page.locator('#content')).toBeFocused();
+  });
 });

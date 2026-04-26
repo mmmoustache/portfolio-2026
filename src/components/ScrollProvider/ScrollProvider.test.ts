@@ -5,17 +5,30 @@ import { initScrollProvider } from '@/components/ScrollProvider/ScrollProvider';
 const rafSpy = vi.fn();
 const scrollToSpy = vi.fn();
 
-let lastCtorOptions: any = null;
+type LenisCtorOptions = {
+  lerp?: number;
+  prevent: (node: Element) => boolean;
+  smoothWheel: boolean;
+};
+
+let lastCtorOptions: LenisCtorOptions | null = null;
+
+function getLastCtorOptions(): LenisCtorOptions {
+  if (!lastCtorOptions) {
+    throw new Error('Expected Lenis constructor options to be set');
+  }
+
+  return lastCtorOptions;
+}
 
 vi.mock('lenis', () => {
   class LenisMock {
     public destroy = vi.fn();
+    public raf = rafSpy;
+    public scrollTo = scrollToSpy;
 
-    constructor(opts: any) {
+    constructor(opts: LenisCtorOptions) {
       lastCtorOptions = opts;
-
-      (this as any).raf = rafSpy;
-      (this as any).scrollTo = scrollToSpy;
     }
   }
 
@@ -68,16 +81,16 @@ describe('initScrollProvider', () => {
   afterEach(() => {
     // NEW: remove the click handler + clear window.__lenis via the real destroy()
     if (cleanup && typeof cleanup === 'object' && 'destroy' in cleanup) {
-      (cleanup as any).destroy();
+      cleanup.destroy();
     }
 
     cleanup = null;
 
     // (optional) keep this as a belt-and-braces cleanup
-    delete (window as any).__lenis;
+    delete window.__lenis;
 
     vi.unstubAllGlobals();
-    (history.pushState as any).mockRestore?.();
+    vi.mocked(history.pushState).mockRestore?.();
     globalThis.requestAnimationFrame = rafOriginal;
   });
 
@@ -104,6 +117,7 @@ describe('initScrollProvider', () => {
   it('uses prevent() to ignore elements inside [data-lenis-prevent]', () => {
     setReducedMotion(false);
     cleanup = initScrollProvider();
+    const options = getLastCtorOptions();
 
     const outer = document.createElement('div');
     outer.dataset.lenisPrevent = '';
@@ -111,12 +125,12 @@ describe('initScrollProvider', () => {
     outer.appendChild(inner);
     document.body.appendChild(outer);
 
-    expect(typeof lastCtorOptions.prevent).toBe('function');
-    expect(lastCtorOptions.prevent(inner)).toBe(true);
+    expect(typeof options.prevent).toBe('function');
+    expect(options.prevent(inner)).toBe(true);
 
     const normal = document.createElement('div');
     document.body.appendChild(normal);
-    expect(lastCtorOptions.prevent(normal)).toBe(false);
+    expect(options.prevent(normal)).toBe(false);
   });
 
   it('clicking a[href="#"] scrolls to top via Lenis', () => {
@@ -168,7 +182,7 @@ describe('initScrollProvider', () => {
     a.click();
     expect(scrollToSpy).toHaveBeenCalledTimes(1);
 
-    (res as any).destroy();
+    res.destroy();
     a.click();
     expect(scrollToSpy).toHaveBeenCalledTimes(1);
     expect(window.__lenis).toBeUndefined();

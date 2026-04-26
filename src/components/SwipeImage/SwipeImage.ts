@@ -1,4 +1,4 @@
-import { clamp } from '@/utils/clamp';
+import { coerceClampedNumber } from '@/utils/coerceNumber';
 
 type SwipeImageEl = HTMLElement & {
   dataset: DOMStringMap & {
@@ -22,10 +22,7 @@ function buildThresholds(steps = THRESHOLD_STEPS): number[] {
 }
 
 function parseThreshold(value: string | undefined, fallback = DEFAULT_THRESHOLD): number {
-  if (!value) return fallback;
-  const n = Number(value);
-  if (!Number.isFinite(n)) return fallback;
-  return clamp(n, 0, 1);
+  return coerceClampedNumber(value, fallback, { min: 0, max: 1 });
 }
 
 function isSwipeImageEl(node: Element): node is SwipeImageEl {

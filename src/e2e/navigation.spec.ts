@@ -61,4 +61,26 @@ test.describe('Navigation', () => {
     await page.keyboard.press('Escape');
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
   });
+
+  test('mobile menu closes cleanly when navigating to the blog listing', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'mobile', 'mobile-only');
+
+    await page.goto(ROUTES.home);
+
+    const menuButton = page.getByRole('button', { name: /Open menu/i });
+
+    await page.evaluate(() => window.scrollTo(0, 100));
+    await expect(menuButton).toBeVisible();
+
+    await menuButton.click();
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+
+    await page.getByRole('dialog', { name: /Menu/i }).getByRole('link', { name: /blog/i }).click();
+
+    await expect(page).toHaveURL(/\/blog\/?$/);
+    await expectLayout(page, 'listing');
+    await expect(page.getByRole('dialog', { name: /Menu/i })).toHaveCount(0);
+  });
 });
