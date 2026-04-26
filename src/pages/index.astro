@@ -3,11 +3,12 @@ import Biography from '@/components/Biography/Biography.astro';
 import BlogPromo from '@/components/BlogPromo/BlogPromo.astro';
 import Introduction from '@/components/Introduction/Introduction.astro';
 import WorkPromo from '@/components/WorkPromo/WorkPromo.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts/consts';
 import data from '@/data/homepage.json';
 import Layout from '@/layouts/Layout.astro';
 ---
 
-<Layout id="home">
+<Layout id="home" title={SITE_TITLE} description={SITE_DESCRIPTION}>
   <Introduction title={data?.introduction?.title} />
   <Biography title={data?.bio?.title} text={data?.bio?.text} tools={data?.bio?.tools} />
   <WorkPromo title={data?.work?.title} text={data?.work?.text} items={data?.work?.items} />

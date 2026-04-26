@@ -5,9 +5,10 @@ export type Props = {
   href: string;
   text: string;
   title: string;
+  github: string;
 };
 
-const { title, text, href } = Astro.props;
+const { title, text, href, github } = Astro.props;
 ---
 
 <div class="work-title | relative flex flex-col justify-center gap-4">
@@ -16,11 +17,11 @@ const { title, text, href } = Astro.props;
     <p class="font-body text-secondary">{text}</p>
   </div>
   <div class="flex gap-3">
-    <a href={href} target="_blank" class="font-body work-tile-link">
+    <a href={href} target="_blank" rel="noopener noreferrer" class="font-body work-tile-link">
       <TextSwap text="Visit project" />
     </a>
     <span class="text-tertiary" aria-hidden="true">•</span>
-    <a href={href} target="_blank" class="font-body work-tile-link">
+    <a href={github} target="_blank" rel="noopener noreferrer" class="font-body work-tile-link">
       <TextSwap text="Github" />
     </a>
   </div>

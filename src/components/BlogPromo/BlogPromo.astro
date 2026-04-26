@@ -27,7 +27,15 @@ const { title, text } = Astro.props;
 <section class="-mt-9 overflow-hidden">
   <div class="layout-content | flex max-w-6xl">
     <BannerClip initialInsetPercentage={20} initialScale={1.5}>
-      <img src={bannerImage.src} alt="A description of the image" loading="lazy" decoding="async" />
+      <img
+        src={bannerImage.src}
+        alt=""
+        aria-hidden="true"
+        width={bannerImage.width}
+        height={bannerImage.height}
+        loading="lazy"
+        decoding="async"
+      />
     </BannerClip>
   </div>
 </section>

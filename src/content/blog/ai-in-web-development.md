@@ -18,7 +18,7 @@ But the more I used it, the more I started to resent it. Other than the moral im
 
 I enjoy programming, I like being precise and intentional with my work. As easy as using Copilot was, pride, peace-of-mind and enjoyment in my work will always outweigh the benefits of saving a bit of time.
 
-## AI lies to you
+## AI lies to you / hallucinates
 
 I recently tried to find a forgotten piece of media from my childhood that I had been searching for forever, a cartoon that I have vague memories of that had been since lost to time. It was worth a shot, maybe ChatGPT can help me find it - I was excited. After describing it as best as I could remember and receiving some suggestions, sadly none of them were correct. I then remembered a nugget of important piece of information: that this media was adapted from another piece of media. Of course, I let ChatGPT know and to my surprise, it returned an exact description of what I was looking for, even a title! I was thrilled, apparently the director produced it off the back of their graduation film, and it was even broadcast on British television! Of course, my next question was, "where can I watch it?". ChatGPT replied with the worst possible answer: "there is no record of this film existing".
 
@@ -39,6 +39,8 @@ You still need a solid foundation and understanding of how your tooling works, b
 I've mostly heard two strong view points on introducing AI into a development pipeline. They are "I hate writing this type of code, and this does it for me" and - more scarily - "This means we can charge the same amount for half of the time spent". Unsurprisingly, the second quote is a pretty much direct quote from a board-member I knew and surprisingly, the first quote is from a developer. Based on these two people, you would think the only justification for using AI is to increase revenue and to prevent developers from doing work they don't want to do. Is it just me, or is that crazy?
 
 It seems to be the dream for some is that coding ceases to be a thing and is replaced by AI entirely. "It can replace junior developers" - okay, that is abhorrent but what about the next generation of coders? How will they break into the industry? "Developer's jobs will simply become overseeing automated pull requests" - wow,
+
+## It puts unruly expectations and responsibilities on the individual developer
 
 ## Where it can help
 

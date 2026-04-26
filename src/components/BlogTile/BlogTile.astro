@@ -19,7 +19,6 @@ const { title, href } = Astro.props;
         href={href}
         class="blog-tile-link | relative z-20 flex h-64 cursor-pointer flex-col p-5 xl:h-125"
         aria-label={`Read more: ${title}`}
-        tabindex="0"
       >
         {title && <h3 class="font-sub-heading">{title}</h3>}
         <span class="font-title mt-auto block text-right">

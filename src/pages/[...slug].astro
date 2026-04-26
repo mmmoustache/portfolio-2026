@@ -1,7 +1,8 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { type CollectionEntry, getCollection, render } from 'astro:content';
 
 import Dot from '@/components/Dot/Dot.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts/consts';
 import Layout from '@/layouts/Layout.astro';
 
 type Props = CollectionEntry<'pages'>;
@@ -9,17 +10,21 @@ type Props = CollectionEntry<'pages'>;
 export async function getStaticPaths() {
   const entries = await getCollection('pages');
   return entries.map((entry: Props) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: { entry },
   }));
 }
 
-const { entry } = Astro.props as Props;
-const { Content } = await entry.render();
+const { entry } = Astro.props as { entry: Props };
+const { Content } = await render(entry);
 const { data } = entry;
 ---
 
-<Layout id="page">
+<Layout
+  id="page"
+  title={`${data.title} | ${SITE_TITLE}`}
+  description={data.description ?? SITE_DESCRIPTION}
+>
   <section class="bg-primary-light grid grid-cols-1 items-center overflow-hidden px-5 py-7">
     <div class="mx-auto p-7">
       <h1 class="font-heading">

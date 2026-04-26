@@ -5,6 +5,7 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import BlogTile from '@/components/BlogTile/BlogTile.astro';
 import Dot from '@/components/Dot/Dot.astro';
 import TextSwap from '@/components/TextSwap/TextSwap.astro';
+import { SITE_TITLE } from '@/consts/consts';
 import Layout from '@/layouts/Layout.astro';
 
 type BlogEntry = CollectionEntry<'blog'>;
@@ -23,7 +24,11 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { page } = Astro.props as { page: Page<BlogEntry> };
 ---
 
-<Layout id="listing">
+<Layout
+  id="listing"
+  title={`Blog | ${SITE_TITLE}`}
+  description="Writing on web engineering, leadership, accessibility, and human-focused digital experiences."
+>
   <section class="bg-secondary-light grid grid-cols-1 items-center overflow-hidden px-5 py-7">
     <div class="mx-auto p-7">
       <h1 class="font-heading">

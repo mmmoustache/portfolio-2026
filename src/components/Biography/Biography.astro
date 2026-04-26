@@ -50,7 +50,14 @@ const { title, text, tools } = Astro.props;
       <div class="col-span-1 lg:col-span-1">
         <div class="mx-auto max-w-80 lg:w-full lg:max-w-full">
           <SwipeImage threshold={0.25}>
-            <img src={Portrait.src} alt="A portrait of Jack Coventry holding a cute koala bear" />
+            <img
+              src={Portrait.src}
+              alt="Portrait of Jack Coventry holding a koala"
+              width={Portrait.width}
+              height={Portrait.height}
+              loading="lazy"
+              decoding="async"
+            />
           </SwipeImage>
         </div>
       </div>

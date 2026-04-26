@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 
 import BlogHero from '@/components/BlogHero/BlogHero.astro';
+import { SITE_TITLE } from '@/consts/consts';
 import Layout from '@/layouts/Layout.astro';
 
 type Props = CollectionEntry<'blog'>;
@@ -21,10 +22,10 @@ export async function getStaticPaths() {
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
-const { title, pubDate, listingImage, duration } = post.data;
+const { title, pubDate, listingImage, duration, description } = post.data;
 ---
 
-<Layout id="post">
+<Layout id="post" title={`${title} | ${SITE_TITLE}`} description={description} image={listingImage}>
   <BlogHero title={title} pubDate={pubDate} duration={Number(duration)} />
   <article class="grid grid-cols-4">
     <section class="col-span-4 xl:col-span-1">
@@ -58,7 +59,19 @@ const { title, pubDate, listingImage, duration } = post.data;
       <Content />
     </section>
     <section class="-mt-8 hidden p-6 xl:block">
-      <img src={listingImage?.src} alt="A decorative, scenic image" />
+      {
+        listingImage && (
+          <img
+            src={listingImage.src}
+            alt=""
+            aria-hidden="true"
+            width={listingImage.width}
+            height={listingImage.height}
+            loading="lazy"
+            decoding="async"
+          />
+        )
+      }
     </section>
   </article>
 </Layout>
