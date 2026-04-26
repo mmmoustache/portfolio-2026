@@ -76,7 +76,11 @@ export function initMainNav(scope: ParentNode = document): void {
   let isMenuOpen = false;
   let isAtTop = window.scrollY <= 0;
   let isBarVisible = !mqDesktop.matches;
+  let isDesktopSentinelInView = mqDesktop.matches;
   let lastFocused: Element | null = null;
+  let lastScrollY = window.scrollY;
+  let pendingNavigationHref: string | null = null;
+  let pendingNavigationTimer: ReturnType<typeof globalThis.setTimeout> | null = null;
 
   function applyNavOffset() {
     const h = els.mobileBar.offsetHeight || 0;
@@ -139,14 +143,21 @@ export function initMainNav(scope: ParentNode = document): void {
 
     isBarVisible = shouldShow;
 
-    if (mqDesktop.matches) {
-      els.mobileBar.classList.toggle('bar-visible', shouldShow);
-    } else {
-      els.mobileBar.classList.add('bar-visible');
-    }
+    els.mobileBar.classList.toggle('bar-visible', shouldShow);
 
     setBarFocusable(shouldShow || !mqDesktop.matches);
     setLogoVisibility();
+  }
+
+  function updateBarVisibilityFromScroll(scrollingUp: boolean) {
+    if (mqDesktop.matches) {
+      const shouldShow = !isDesktopSentinelInView && scrollingUp;
+      setBarVisible(shouldShow);
+      return;
+    }
+
+    const shouldShow = isAtTop || scrollingUp;
+    setBarVisible(shouldShow);
   }
 
   function lockScroll() {
@@ -164,6 +175,60 @@ export function initMainNav(scope: ParentNode = document): void {
 
   function getTrapScopeFocusable(): HTMLElement[] {
     return dedupe([...getFocusable(els.mobileBar), ...getFocusable(els.menu)]);
+  }
+
+  function clearPendingRouteState() {
+    pendingNavigationHref = null;
+    if (pendingNavigationTimer != null) {
+      globalThis.clearTimeout(pendingNavigationTimer);
+      pendingNavigationTimer = null;
+    }
+
+    els.mobileBar.dataset.routePending = 'false';
+    els.menu.dataset.routePending = 'false';
+    els.menu.removeAttribute('aria-busy');
+
+    const pendingLinks = els.panel.querySelectorAll<HTMLAnchorElement>(
+      'a[data-route-pending="true"]'
+    );
+    pendingLinks.forEach((link) => {
+      delete link.dataset.routePending;
+      delete link.dataset.swapFrozen;
+    });
+  }
+
+  function isDelayedInternalNavigation(link: HTMLAnchorElement, event?: MouseEvent | PointerEvent) {
+    const reduce = globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isModifiedClick = Boolean(
+      event &&
+      (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+    );
+    const isKeyboardLikeActivation = event instanceof MouseEvent ? event.detail === 0 : false;
+
+    if (
+      reduce ||
+      isModifiedClick ||
+      isKeyboardLikeActivation ||
+      link.target === '_blank' ||
+      link.hasAttribute('download')
+    ) {
+      return false;
+    }
+
+    let url: URL;
+    try {
+      url = new URL(link.href, window.location.href);
+    } catch {
+      return false;
+    }
+
+    const isSameOrigin = url.origin === window.location.origin;
+    const isSamePageHashOnly =
+      url.pathname === window.location.pathname &&
+      url.search === window.location.search &&
+      url.hash.length > 0;
+
+    return isSameOrigin && !isSamePageHashOnly;
   }
 
   function trapFocus(e: KeyboardEvent) {
@@ -204,6 +269,8 @@ export function initMainNav(scope: ParentNode = document): void {
   }
 
   function openMenu() {
+    clearPendingRouteState();
+
     if (isMenuOpen) {
       els.toggle.focus();
       return;
@@ -236,6 +303,8 @@ export function initMainNav(scope: ParentNode = document): void {
   function closeMenu() {
     if (!isMenuOpen) return;
     isMenuOpen = false;
+
+    clearPendingRouteState();
 
     els.mobileBar.dataset.menuOpen = 'false';
     els.toggle.setAttribute('aria-expanded', 'false');
@@ -276,12 +345,69 @@ export function initMainNav(scope: ParentNode = document): void {
   function onPanelClick(e: MouseEvent) {
     const target = e.target as HTMLElement | null;
     const link = target?.closest?.('a');
-    if (link) closeMenu();
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    if (!isDelayedInternalNavigation(link, e)) {
+      closeMenu();
+      return;
+    }
+
+    const url = new URL(link.href, window.location.href);
+
+    e.preventDefault();
+
+    if (pendingNavigationHref) return;
+    pendingNavigationHref = url.toString();
+    link.dataset.routePending = 'true';
+
+    els.mobileBar.dataset.routePending = 'true';
+    els.menu.dataset.routePending = 'true';
+    els.menu.setAttribute('aria-busy', 'true');
+    els.toggle.setAttribute('aria-expanded', 'false');
+
+    document.removeEventListener('keydown', onMenuKeydown, true);
+
+    pendingNavigationTimer = globalThis.setTimeout(() => {
+      window.location.assign(url.toString());
+    }, 180);
+  }
+
+  function onPanelPointerDown(e: PointerEvent) {
+    const target = e.target as HTMLElement | null;
+    const link = target?.closest?.('a');
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    if (!isDelayedInternalNavigation(link, e)) return;
+
+    const frozenLinks = els.panel.querySelectorAll<HTMLAnchorElement>('a[data-swap-frozen="true"]');
+    frozenLinks.forEach((item) => {
+      if (item !== link) delete item.dataset.swapFrozen;
+    });
+
+    link.dataset.swapFrozen = 'true';
+  }
+
+  function clearFrozenLinks() {
+    const frozenLinks = els.panel.querySelectorAll<HTMLAnchorElement>('a[data-swap-frozen="true"]');
+    frozenLinks.forEach((link) => {
+      delete link.dataset.swapFrozen;
+    });
+  }
+
+  function onPanelPointerCancel() {
+    if (pendingNavigationHref) return;
+    clearFrozenLinks();
   }
 
   function updateAtTop() {
-    isAtTop = window.scrollY <= 0;
+    const nextScrollY = window.scrollY;
+    const scrollingUp = nextScrollY < lastScrollY;
+
+    isAtTop = nextScrollY <= 0;
     els.mobileBar.dataset.atTop = String(isAtTop);
+    updateBarVisibilityFromScroll(scrollingUp);
+
+    lastScrollY = nextScrollY;
     setLogoVisibility();
   }
 
@@ -310,14 +436,15 @@ export function initMainNav(scope: ParentNode = document): void {
 
       io = new IntersectionObserver((entries) => {
         const entry = entries[0];
-        setBarVisible(!entry.isIntersecting);
+        isDesktopSentinelInView = entry.isIntersecting;
+        updateBarVisibilityFromScroll(window.scrollY < lastScrollY);
       });
 
       io.observe(els.desktopSentinel);
 
       const rect = els.desktopSentinel.getBoundingClientRect();
-      const sentinelInView = rect.top < window.innerHeight && rect.bottom >= 0;
-      setBarVisible(!sentinelInView);
+      isDesktopSentinelInView = rect.top < window.innerHeight && rect.bottom >= 0;
+      updateBarVisibilityFromScroll(window.scrollY < lastScrollY);
     };
 
     mqDesktop.addEventListener('change', apply);
@@ -379,5 +506,7 @@ export function initMainNav(scope: ParentNode = document): void {
   document.addEventListener('click', skipToContent);
 
   els.overlay.addEventListener('click', onOverlayClick);
+  els.panel.addEventListener('pointerdown', onPanelPointerDown);
+  els.panel.addEventListener('pointercancel', onPanelPointerCancel);
   els.panel.addEventListener('click', onPanelClick);
 }

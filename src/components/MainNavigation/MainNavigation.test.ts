@@ -417,7 +417,7 @@ describe('initMainNav', () => {
     expect(vi.mocked(content.scrollIntoView)).toHaveBeenCalledTimes(1);
   });
 
-  it('desktop observer toggles bar-visible based on sentinel intersection', () => {
+  it('desktop observer shows the compact bar only when scrolling up after the sentinel leaves view', () => {
     const { mobileBar } = setupDom();
     installMatchMedia(true);
 
@@ -445,7 +445,14 @@ describe('initMainNav', () => {
     obs.trigger({ isIntersecting: true });
     expect(mobileBar.classList.contains('bar-visible')).toBe(false);
 
+    Object.defineProperty(window, 'scrollY', { value: 500, configurable: true });
+    window.dispatchEvent(new Event('scroll'));
+
     obs.trigger({ isIntersecting: false });
+    expect(mobileBar.classList.contains('bar-visible')).toBe(false);
+
+    Object.defineProperty(window, 'scrollY', { value: 380, configurable: true });
+    window.dispatchEvent(new Event('scroll'));
     expect(mobileBar.classList.contains('bar-visible')).toBe(true);
   });
 });

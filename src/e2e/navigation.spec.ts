@@ -1,7 +1,14 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 import { expectLayout } from '@/e2e/helpers/expectLayout';
 import { ROUTES } from '@/e2e/helpers/routes';
+
+async function revealCompactBar(page: Page) {
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await page.waitForTimeout(100);
+  await page.evaluate(() => window.scrollTo(0, 380));
+  await page.waitForTimeout(100);
+}
 
 test.describe('Navigation', () => {
   test('Nav can reach Blog listing', async ({ page }, testInfo) => {
@@ -10,7 +17,7 @@ test.describe('Navigation', () => {
     if (testInfo.project.name === 'mobile') {
       const menuButton = page.getByRole('button', { name: /Open menu/i });
 
-      await page.evaluate(() => window.scrollTo(0, 100));
+      await revealCompactBar(page);
       await expect(menuButton).toBeVisible();
       await menuButton.click();
 
@@ -48,8 +55,7 @@ test.describe('Navigation', () => {
     const menuButton = page.getByRole('button', { name: /Open menu/i });
 
     await expect(menuButton).toHaveCount(0);
-    await page.evaluate(() => window.scrollTo(0, 100));
-    await page.waitForTimeout(50);
+    await revealCompactBar(page);
 
     await expect(menuButton).toBeVisible();
     await menuButton.focus();
@@ -71,7 +77,7 @@ test.describe('Navigation', () => {
 
     const menuButton = page.getByRole('button', { name: /Open menu/i });
 
-    await page.evaluate(() => window.scrollTo(0, 100));
+    await revealCompactBar(page);
     await expect(menuButton).toBeVisible();
 
     await menuButton.click();
@@ -82,5 +88,29 @@ test.describe('Navigation', () => {
     await expect(page).toHaveURL(/\/blog\/?$/);
     await expectLayout(page, 'listing');
     await expect(page.getByRole('dialog', { name: /Menu/i })).toHaveCount(0);
+  });
+
+  test('desktop compact bar appears only when scrolling back up after the masthead', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === 'mobile', 'desktop-only');
+
+    await page.goto(ROUTES.home);
+
+    const compactBar = page.locator('#mobileBar');
+
+    await expect(compactBar).not.toHaveClass(/bar-visible/);
+
+    await page.evaluate(() => window.scrollTo(0, 500));
+    await page.waitForTimeout(100);
+    await expect(compactBar).not.toHaveClass(/bar-visible/);
+
+    await page.evaluate(() => window.scrollTo(0, 380));
+    await page.waitForTimeout(100);
+    await expect(compactBar).toHaveClass(/bar-visible/);
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(100);
+    await expect(compactBar).not.toHaveClass(/bar-visible/);
   });
 });

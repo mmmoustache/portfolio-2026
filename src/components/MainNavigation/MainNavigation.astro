@@ -26,7 +26,7 @@ const { items = [] } = Astro.props;
     <ul class="flex h-20 items-center justify-between gap-8">
       <li>
         <a id="desktopLogo" href="/" class="inline-flex items-center gap-3">
-          <span class="font-body p-6">{SITE_AUTHOR}</span>
+          <TextSwap text={SITE_AUTHOR} class="font-body p-6" />
         </a>
       </li>
       {
@@ -60,6 +60,7 @@ const { items = [] } = Astro.props;
     class="fixed top-0 right-0 left-0 z-70 transition-opacity transition-transform motion-reduce:transition-none"
     data-at-top="true"
     data-menu-open="false"
+    data-route-pending="false"
   >
     <nav aria-label="Primary navigation" class="layout-content">
       <div class="flex h-16 items-center justify-between">
@@ -106,6 +107,7 @@ const { items = [] } = Astro.props;
     aria-label="Menu"
     tabindex="-1"
     aria-hidden="true"
+    data-route-pending="false"
     hidden
   >
     <div class="h-full w-full" data-menu-overlay>
@@ -128,7 +130,10 @@ const { items = [] } = Astro.props;
               };
               return (
                 <li class="p-2">
-                  <a {...attributes} class="font-heading block text-center">
+                  <a
+                    {...attributes}
+                    class="mobile-menu-link text-swapper font-heading block text-center"
+                  >
                     <TextSwap
                       text={item.label}
                       class="flex leading-[1.2em] max-lg:leading-[1.1em]"
@@ -145,27 +150,69 @@ const { items = [] } = Astro.props;
 
   <style>
     #mobileBar {
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition:
+        opacity 180ms,
+        transform 180ms;
+    }
+
+    #mobileBar.bar-visible {
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
     }
 
-    @media (min-width: 1024px) {
-      #mobileBar {
-        opacity: 0;
-        transform: translateY(-8px);
-        pointer-events: none;
-      }
-
-      #mobileBar.bar-visible {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-        pointer-events: auto !important;
-      }
-    }
-
     #mobileLogo.js-ready {
       transition: opacity 180ms;
+    }
+
+    #mobileMenu [data-menu-panel] {
+      opacity: 1;
+      transform: translateY(0);
+      transition:
+        opacity 180ms ease,
+        transform 180ms var(--motion-ease-settle);
+    }
+
+    #mobileMenu .mobile-menu-link {
+      display: flex;
+      justify-content: center;
+    }
+
+    #mobileMenu .mobile-menu-link :global(.text-swap) {
+      pointer-events: none;
+    }
+
+    #mobileMenu[data-route-pending='true'] {
+      opacity: 1 !important;
+      pointer-events: none;
+    }
+
+    #mobileMenu[data-route-pending='true'] [data-menu-panel] {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    #mobileMenu a[data-route-pending='true'] :global(.text-swap .top),
+    #mobileMenu a[data-swap-frozen='true'] :global(.text-swap .top) {
+      transform: translateY(-104%) !important;
+      transition: none !important;
+      transition-delay: 0ms !important;
+    }
+
+    #mobileMenu a[data-route-pending='true'] :global(.text-swap .bottom),
+    #mobileMenu a[data-swap-frozen='true'] :global(.text-swap .bottom) {
+      transform: translateY(0) !important;
+      transition: none !important;
+      transition-delay: 0ms !important;
+    }
+
+    #mobileMenu a[data-route-pending='true'] :global(.text-swap)::after,
+    #mobileMenu a[data-swap-frozen='true'] :global(.text-swap)::after {
+      width: 100% !important;
+      transition: none !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -175,6 +222,7 @@ const { items = [] } = Astro.props;
 
       #mobileBar,
       #mobileMenu,
+      #mobileMenu [data-menu-panel],
       #menuToggle [data-line='top'],
       #menuToggle [data-line='bottom'] {
         transition: none !important;
