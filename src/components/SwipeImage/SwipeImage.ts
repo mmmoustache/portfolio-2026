@@ -32,6 +32,12 @@ function isSwipeImageEl(node: Element): node is SwipeImageEl {
   return node instanceof HTMLElement && Object.hasOwn(node.dataset, 'swipeImage');
 }
 
+function reveal(el: SwipeImageEl): void {
+  requestAnimationFrame(() => {
+    el.dataset.revealed = 'true';
+  });
+}
+
 function reset(el: SwipeImageEl): void {
   el.dataset.resetting = 'true';
   delete el.dataset.revealed;
@@ -54,9 +60,7 @@ function arm(el: SwipeImageEl, obsMap: WeakMap<SwipeImageEl, IntersectionObserve
         if (!entry.isIntersecting) continue;
 
         if (entry.intersectionRatio >= threshold) {
-          requestAnimationFrame(() => {
-            el.dataset.revealed = 'true';
-          });
+          reveal(el);
           observer.disconnect();
           break;
         }
@@ -83,6 +87,11 @@ function initAll(
 
     if (opts.forceReset || !alreadyInit) {
       reset(node);
+    }
+
+    if (!('IntersectionObserver' in globalThis)) {
+      reveal(node);
+      continue;
     }
 
     arm(node, obsMap);

@@ -28,6 +28,10 @@ function isBannerClipEl(el: Element): el is BannerClipEl {
   return el instanceof HTMLElement && Object.hasOwn(el.dataset, 'bannerClip');
 }
 
+function warnBannerClip(message: string, detail?: unknown) {
+  console.warn(`[BannerClip] ${message}`, detail);
+}
+
 export function BannerClip(): void {
   if (prefersReducedMotion()) return;
 
@@ -37,10 +41,14 @@ export function BannerClip(): void {
     if (!isBannerClipEl(el)) return;
 
     if (el.dataset.hasInitialized === 'true') return;
-    el.dataset.hasInitialized = 'true';
 
     const inner = el.querySelector<HTMLElement>('.banner-clip__inner');
-    if (!inner) return;
+    if (!inner) {
+      warnBannerClip('Missing inner element for banner clip', el);
+      return;
+    }
+
+    el.dataset.hasInitialized = 'true';
 
     const initialInset = parseNumber(el.dataset.initialInset, 30, { min: 0, max: 100 });
     const initialScale = parseNumber(el.dataset.initialScale, 1.15, { min: 1, max: 3 });

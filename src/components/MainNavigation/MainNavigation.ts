@@ -30,31 +30,58 @@ type InertElement = HTMLElement & {
   inert?: boolean;
 };
 
-function queryRequired<T extends Element>(root: ParentNode, selector: string): T {
-  const el = root.querySelector<T>(selector);
-  if (!el) throw new Error(`[MainNav] Missing required element: ${selector}`);
+function warnMainNav(message: string, detail?: unknown) {
+  console.warn(`[MainNav] ${message}`, detail);
+}
+
+function isHTMLElement(el: Element | null): el is HTMLElement {
+  return el instanceof HTMLElement;
+}
+
+function isHTMLButtonElement(el: Element | null): el is HTMLButtonElement {
+  return el instanceof HTMLButtonElement;
+}
+
+function queryRequired<T extends Element>(
+  root: ParentNode,
+  selector: string,
+  isExpected: (el: Element | null) => el is T,
+  expectedLabel: string
+): T {
+  const el = root.querySelector(selector);
+  if (!isExpected(el)) {
+    throw new Error(`Missing or invalid ${expectedLabel}: ${selector}`);
+  }
+
   return el;
 }
 
-function queryOptional<T extends Element>(root: ParentNode, selector: string): T | null {
-  return root.querySelector<T>(selector);
+function queryOptional<T extends Element>(
+  root: ParentNode,
+  selector: string,
+  isExpected: (el: Element | null) => el is T
+): T | null {
+  const el = root.querySelector(selector);
+  if (el == null) return null;
+
+  return isExpected(el) ? el : null;
 }
 
 function collectEls(scope: ParentNode): NavEls {
-  const header = queryRequired<HTMLElement>(scope, '#siteHeader');
+  const header = queryRequired(scope, '#siteHeader', isHTMLElement, 'header');
 
   return {
     header,
-    desktopLogo: queryOptional<HTMLElement>(header, '#desktopLogo'),
-    desktopSentinel: queryOptional<HTMLElement>(header, '#desktopNavSentinel'),
+    desktopLogo: queryOptional(header, '#desktopLogo', isHTMLElement),
+    desktopSentinel: queryOptional(header, '#desktopNavSentinel', isHTMLElement),
 
-    mobileBar: queryRequired<HTMLElement>(header, '#mobileBar'),
-    mobileLogo: queryRequired<HTMLElement>(header, '#mobileLogo'),
-    toggle: queryRequired<HTMLButtonElement>(header, '#menuToggle'),
+    mobileBar: queryRequired(header, '#mobileBar', isHTMLElement, 'mobile bar'),
+    mobileLogo: queryRequired(header, '#mobileLogo', isHTMLElement, 'mobile logo'),
+    toggle: queryRequired(header, '#menuToggle', isHTMLButtonElement, 'menu toggle'),
 
-    menu: queryRequired<HTMLElement>(header, '#mobileMenu'),
-    overlay: queryRequired<HTMLElement>(header, '[data-menu-overlay]'),
-    panel: queryRequired<HTMLElement>(header, '[data-menu-panel]'),
+    menu: queryRequired(header, '#mobileMenu', isHTMLElement, 'mobile menu'),
+    overlay: queryRequired(header, '[data-menu-overlay]', isHTMLElement, 'menu overlay'),
+    panel: queryRequired(header, '[data-menu-panel]', isHTMLElement, 'menu panel'),
   };
 }
 
@@ -70,7 +97,7 @@ export function initMainNav(scope: ParentNode = document): void {
   try {
     els = collectEls(scope);
   } catch (e) {
-    console.warn(e);
+    warnMainNav('Unable to initialize navigation', e);
     return;
   }
 

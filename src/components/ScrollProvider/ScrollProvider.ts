@@ -6,6 +6,19 @@ export type InitScrollProviderOptions = {
   lerp?: number;
 };
 
+function findHashTarget(hash: string): HTMLElement | null {
+  const id = hash.slice(1);
+  if (!id) return null;
+
+  try {
+    const decodedId = decodeURIComponent(id);
+    const target = document.getElementById(decodedId);
+    return target instanceof HTMLElement ? target : null;
+  } catch {
+    return null;
+  }
+}
+
 export function initScrollProvider(options: InitScrollProviderOptions = {}) {
   if (prefersReducedMotion()) return null;
 
@@ -33,8 +46,8 @@ export function initScrollProvider(options: InitScrollProviderOptions = {}) {
     const a = target.closest('a[href^="#"]');
     if (!(a instanceof HTMLAnchorElement)) return;
 
-    const href = a.getAttribute('href');
-    if (!href) return;
+    const href = a.getAttribute('href')?.trim();
+    if (!href || !href.startsWith('#')) return;
 
     if (href === '#') {
       e.preventDefault();
@@ -43,8 +56,17 @@ export function initScrollProvider(options: InitScrollProviderOptions = {}) {
       return;
     }
 
-    const el = document.querySelector(href);
-    if (!(el instanceof HTMLElement)) return;
+    const url = new URL(a.href, window.location.href);
+    if (
+      url.origin !== window.location.origin ||
+      url.pathname !== window.location.pathname ||
+      url.search !== window.location.search
+    ) {
+      return;
+    }
+
+    const el = findHashTarget(href);
+    if (!el) return;
 
     e.preventDefault();
     lenis.scrollTo(el);

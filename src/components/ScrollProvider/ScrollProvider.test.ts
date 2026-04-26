@@ -176,4 +176,32 @@ describe('initScrollProvider', () => {
     // make sure afterEach doesn't try to destroy twice
     cleanup = null;
   });
+
+  it('ignores cross-page hash links', () => {
+    setReducedMotion(false);
+    cleanup = initScrollProvider();
+
+    const a = document.createElement('a');
+    a.href = '/privacy/#content';
+    a.textContent = 'Other page';
+    document.body.appendChild(a);
+
+    a.click();
+
+    expect(scrollToSpy).not.toHaveBeenCalled();
+    expect(history.pushState).not.toHaveBeenCalled();
+  });
+
+  it('ignores malformed in-page hashes safely', () => {
+    setReducedMotion(false);
+    cleanup = initScrollProvider();
+
+    const a = document.createElement('a');
+    a.setAttribute('href', '#%E0%A4%A');
+    a.textContent = 'Broken hash';
+    document.body.appendChild(a);
+
+    expect(() => a.click()).not.toThrow();
+    expect(scrollToSpy).not.toHaveBeenCalled();
+  });
 });

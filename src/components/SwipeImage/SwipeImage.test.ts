@@ -271,4 +271,24 @@ describe('SwipeImage()', () => {
     expect(io.instances.length).toBe(1);
     expect(el.dataset.swipeInit).toBe('true');
   });
+
+  it('reveals immediately when IntersectionObserver is unavailable', () => {
+    const el = setupDom();
+    vi.unstubAllGlobals();
+    listeners.cleanup();
+    listeners = trackEventListeners();
+    raf = installRafQueue();
+
+    resetSwipeGlobals();
+    vi.spyOn(document, 'readyState', 'get').mockReturnValue('complete');
+
+    SwipeImage();
+
+    expect(el.dataset.swipeInit).toBe('true');
+    expect(el.dataset.revealed).toBeUndefined();
+
+    raf.flush(2);
+
+    expect(el.dataset.revealed).toBe('true');
+  });
 });
