@@ -24,7 +24,7 @@ const { title, text, tools } = Astro.props;
 
 <section class="-mt-9 overflow-hidden">
   <div class="mx-auto flex max-w-6xl">
-    <BannerClip initialInsetPercentage={20} initialScale={1.5}>
+    <BannerClip initialInsetPercentage={18} initialScale={1.34} ease={0.09}>
       <Image
         src={BannerImage}
         alt="A landscape photography of an ocean on a sunny day"
@@ -50,7 +50,12 @@ const { title, text, tools } = Astro.props;
       </div>
       <div class="col-span-1 lg:col-span-1">
         <div class="mx-auto max-w-80 lg:w-full lg:max-w-full">
-          <SwipeImage threshold={0.25}>
+          <SwipeImage
+            threshold={0.18}
+            delayMs={80}
+            durationMs={900}
+            easing="var(--motion-ease-settle)"
+          >
             <Image
               src={Portrait}
               alt="Portrait of Jack Coventry holding a koala"

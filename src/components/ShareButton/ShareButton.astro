@@ -37,6 +37,10 @@ const { url } = Astro.props;
     btn.dataset.copied = String(isCopied);
   });
 
+  function promptForManualCopy(value: string) {
+    globalThis.prompt('Copy this link:', value);
+  }
+
   btn.addEventListener('click', async () => {
     if (navigator.share) {
       try {
@@ -54,17 +58,6 @@ const { url } = Astro.props;
       }
     } catch {}
 
-    // Fallback for iOS
-    const ta = document.createElement('textarea');
-    ta.value = url;
-    ta.setAttribute('readonly', '');
-    ta.style.position = 'fixed';
-    ta.style.top = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    (document as any).execCommand('copy');
-    ta.remove();
-
-    flashCopied();
+    promptForManualCopy(url);
   });
 </script>

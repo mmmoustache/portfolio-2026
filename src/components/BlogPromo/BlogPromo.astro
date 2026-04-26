@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 
 import bannerImage from '@/assets/skyline.webp';
 import BannerClip from '@/components/BannerClip/BannerClip.astro';
@@ -13,12 +13,8 @@ type Props = {
   text?: string;
 };
 
-type BlogPost = {
-  pubDate: number;
-};
-
 const posts = (await getCollection('blog')).sort(
-  (a: { data: BlogPost }, b: { data: BlogPost }) =>
+  (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
     b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
@@ -27,7 +23,7 @@ const { title, text } = Astro.props;
 
 <section class="-mt-9 overflow-hidden">
   <div class="layout-content | flex max-w-6xl">
-    <BannerClip initialInsetPercentage={20} initialScale={1.5}>
+    <BannerClip initialInsetPercentage={22} initialScale={1.38} ease={0.085}>
       <Image
         src={bannerImage}
         alt=""
@@ -54,26 +50,23 @@ const { title, text } = Astro.props;
   {
     posts.length > 0 ? (
       <ul class="layout-content | grid max-w-3xl gap-4 py-7 xl:max-w-7xl xl:grid-cols-3">
-        {posts?.map(
-          (
-            item: {
-              data: any;
-              id: any;
-            },
-            index: number
-          ) => (
-            <li class="col-span-1">
-              <SwipeImage threshold={0.3} delayMs={200 * index}>
-                <BlogTile
-                  title={item.data.title}
-                  text={item.data.description}
-                  href={`/blog/${item.id}`}
-                  image={item.data.listingImage?.src}
-                />
-              </SwipeImage>
-            </li>
-          )
-        )}
+        {posts?.map((item: CollectionEntry<'blog'>, index: number) => (
+          <li class="col-span-1">
+            <SwipeImage
+              threshold={0.2}
+              delayMs={140 * index}
+              durationMs={920}
+              easing="var(--motion-ease-emphasis)"
+            >
+              <BlogTile
+                title={item.data.title}
+                text={item.data.description}
+                href={`/blog/${item.id}`}
+                image={item.data.listingImage?.src}
+              />
+            </SwipeImage>
+          </li>
+        ))}
       </ul>
     ) : null
   }

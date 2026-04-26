@@ -26,6 +26,10 @@ type NavEls = {
   panel: HTMLElement;
 };
 
+type InertElement = HTMLElement & {
+  inert?: boolean;
+};
+
 function queryRequired<T extends Element>(root: ParentNode, selector: string): T {
   const el = root.querySelector<T>(selector);
   if (!el) throw new Error(`[MainNav] Missing required element: ${selector}`);
@@ -52,6 +56,13 @@ function collectEls(scope: ParentNode): NavEls {
     overlay: queryRequired<HTMLElement>(header, '[data-menu-overlay]'),
     panel: queryRequired<HTMLElement>(header, '[data-menu-panel]'),
   };
+}
+
+function setInert(el: Element, shouldBeInert: boolean) {
+  if (!(el instanceof HTMLElement)) return;
+
+  const inertEl = el as InertElement;
+  if ('inert' in inertEl) inertEl.inert = shouldBeInert;
 }
 
 export function initMainNav(scope: ParentNode = document): void {
@@ -81,10 +92,10 @@ export function initMainNav(scope: ParentNode = document): void {
       if (el === els.header) continue;
 
       if (shouldInert) {
-        if ('inert' in el) (el as any).inert = true;
+        setInert(el, true);
         el.setAttribute('aria-hidden', 'true');
       } else {
-        if ('inert' in el) (el as any).inert = false;
+        setInert(el, false);
         el.removeAttribute('aria-hidden');
       }
     }
@@ -109,13 +120,13 @@ export function initMainNav(scope: ParentNode = document): void {
     if (isMenuOpen) shouldBeFocusable = true;
 
     if (shouldBeFocusable) {
-      if ('inert' in els.mobileBar) (els.mobileBar as any).inert = false;
+      setInert(els.mobileBar, false);
       els.mobileBar.removeAttribute('aria-hidden');
 
       els.toggle.removeAttribute('tabindex');
       els.toggle.removeAttribute('aria-hidden');
     } else {
-      if ('inert' in els.mobileBar) (els.mobileBar as any).inert = true;
+      setInert(els.mobileBar, true);
       els.mobileBar.setAttribute('aria-hidden', 'true');
 
       els.toggle.setAttribute('tabindex', '-1');

@@ -21,6 +21,7 @@ export default [
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
     },
@@ -47,11 +48,22 @@ export default [
       },
     },
     plugins: {
+      '@typescript-eslint': tsPlugin,
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+    },
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', 'src/e2e/**/*.ts'],
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
