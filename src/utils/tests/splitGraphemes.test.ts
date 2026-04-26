@@ -15,7 +15,7 @@ describe('splitGraphemes()', () => {
   });
 
   it('falls back to Array.from when Intl.Segmenter is not available', () => {
-    globalThis.Intl = {} as any;
+    globalThis.Intl = {} as unknown as typeof Intl;
 
     const input = '🇬🇧é';
 
@@ -25,7 +25,7 @@ describe('splitGraphemes()', () => {
   });
 
   it('does not throw when Intl exists but Segmenter is missing', () => {
-    globalThis.Intl = {} as any;
+    globalThis.Intl = {} as unknown as typeof Intl;
 
     expect(() => splitGraphemes('test')).not.toThrow();
   });

@@ -18,7 +18,9 @@ function isBannerClipEl(el: Element): el is BannerClipEl {
 }
 
 function warnBannerClip(message: string, detail?: unknown) {
-  console.warn(`[BannerClip] ${message}`, detail);
+  if (import.meta.env.DEV) {
+    console.warn(`[BannerClip] ${message}`, detail);
+  }
 }
 
 export function BannerClip(): void {

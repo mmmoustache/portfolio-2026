@@ -32,7 +32,9 @@ type InertElement = HTMLElement & {
 };
 
 function warnMainNav(message: string, detail?: unknown) {
-  console.warn(`[MainNav] ${message}`, detail);
+  if (import.meta.env.DEV) {
+    console.warn(`[MainNav] ${message}`, detail);
+  }
 }
 
 function collectEls(scope: ParentNode): NavEls {

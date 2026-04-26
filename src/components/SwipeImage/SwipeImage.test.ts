@@ -1,40 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SwipeImage } from '@/components/SwipeImage/SwipeImage';
-
-function trackEventListeners() {
-  const added: Array<{
-    target: EventTarget;
-    type: string;
-    listener: EventListenerOrEventListenerObject;
-    options?: boolean | AddEventListenerOptions;
-  }> = [];
-
-  const proto = EventTarget.prototype;
-  const originalAdd = proto.addEventListener;
-  const originalRemove = proto.removeEventListener;
-
-  proto.addEventListener = function (
-    this: EventTarget,
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
-  ) {
-    added.push({ target: this, type, listener, options });
-    return originalAdd.call(this, type, listener, options);
-  } as any;
-
-  return {
-    cleanup() {
-      for (let i = added.length - 1; i >= 0; i--) {
-        const { target, type, listener, options } = added[i];
-        originalRemove.call(target, type, listener, options as any);
-      }
-      proto.addEventListener = originalAdd;
-      proto.removeEventListener = originalRemove;
-    },
-  };
-}
+import { trackEventListeners } from '@/utils/tests/domMocks';
 
 function installRafQueue() {
   const queue: FrameRequestCallback[] = [];
@@ -79,15 +46,15 @@ function installIntersectionObserver() {
     constructor(cb: IntersectionObserverCallback, options?: IntersectionObserverInit) {
       this.cb = cb;
       this.options = options;
-      instances.push(this as any);
+      instances.push(this as unknown as IOInstance);
     }
 
     trigger(entries: Partial<IntersectionObserverEntry>[]) {
-      this.cb(entries as IntersectionObserverEntry[], this as any);
+      this.cb(entries as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
     }
   }
 
-  vi.stubGlobal('IntersectionObserver', FakeIO as any);
+  vi.stubGlobal('IntersectionObserver', FakeIO as unknown as typeof IntersectionObserver);
 
   return {
     instances,
@@ -107,17 +74,20 @@ function setupDom(threshold?: string) {
 
   const el = document.getElementById('swipe') as HTMLElement;
 
-  el.getBoundingClientRect = vi.fn(() => ({
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: 0,
-    height: 0,
-    x: 0,
-    y: 0,
-    toJSON: () => ({}),
-  })) as any;
+  el.getBoundingClientRect = vi.fn<() => DOMRect>(
+    () =>
+      ({
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }) as DOMRect
+  );
 
   return el;
 }
