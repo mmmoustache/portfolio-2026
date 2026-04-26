@@ -58,10 +58,11 @@ const { title, text, tools } = Astro.props;
           >
             <Image
               src={Portrait}
+              class="h-auto w-full"
               alt="Portrait of Jack Coventry holding a koala"
               loading="lazy"
-              widths={[320, 480, 640]}
-              sizes="(min-width: 1024px) 20rem, 80vw"
+              widths={[320, 480, 640, 800, 960, 1130, 1600]}
+              sizes="(min-width: 1024px) 35.3125rem, 20rem"
             />
           </SwipeImage>
         </div>

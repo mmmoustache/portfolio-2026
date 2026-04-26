@@ -78,7 +78,7 @@ const schema = {
       </nav>
     </section>
     <section
-      class="body-text col-span-4 flex flex-col gap-6 px-5 py-5 xl:col-span-2 xl:col-start-2 xl:py-9"
+      class="blog-post-content body-text col-span-4 flex flex-col gap-6 px-5 py-5 xl:col-span-2 xl:col-start-2 xl:py-9"
     >
       <Content />
     </section>
@@ -99,6 +99,10 @@ const schema = {
 </Layout>
 
 <style is:inline>
+  .blog-post-content > p:first-of-type {
+    font: var(--font-title-2);
+  }
+
   details summary::after {
     border: solid var(--color-black);
     border-width: 0 3px 3px 0;
