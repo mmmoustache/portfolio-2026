@@ -43,7 +43,7 @@ const { title, text, tools } = Astro.props;
         <h2 class="font-heading">
           {title}<Dot />
         </h2>
-        <p set:html={text} class="font-body lg:font-title pt-6 text-left" />
+        {text && <p class="font-body lg:font-title pt-6 text-left">{text}</p>}
         <div class="flex flex-col gap-5 py-8">
           <LogoBlock items={tools} />
         </div>

@@ -1,6 +1,6 @@
 ---
 title: 'Resetting a team culture'
-description: 'Turning a team culture from nothing to something special'
+description: 'How a web engineering practice rebuilt morale, engagement, and team identity after a difficult merger.'
 pubDate: 'Jan 11 2026'
 listingImage: '../../assets/mountains.webp'
 duration: 5

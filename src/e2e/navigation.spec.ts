@@ -4,13 +4,28 @@ import { expectLayout } from '@/e2e/helpers/expectLayout';
 import { ROUTES } from '@/e2e/helpers/routes';
 
 test.describe('Navigation', () => {
-  test('Nav can reach Blog listing', async ({ page }) => {
+  test('Nav can reach Blog listing', async ({ page }, testInfo) => {
     await page.goto(ROUTES.home);
-    const mainNav = page.getByRole('navigation', {
-      name: /Primary/i,
-    });
 
-    await mainNav.getByRole('link', { name: /blog/i }).first().click();
+    if (testInfo.project.name === 'mobile') {
+      const menuButton = page.getByRole('button', { name: /Open menu/i });
+
+      await page.evaluate(() => window.scrollTo(0, 100));
+      await expect(menuButton).toBeVisible();
+      await menuButton.click();
+
+      await page
+        .getByRole('dialog', { name: /Menu/i })
+        .getByRole('link', { name: /blog/i })
+        .click();
+    } else {
+      const mastheadNav = page.getByRole('navigation', {
+        name: /Masthead navigation/i,
+      });
+
+      await mastheadNav.getByRole('link', { name: /blog/i }).click();
+    }
+
     await expect(page).toHaveURL(/\/blog\/?$/);
     await expectLayout(page, 'listing');
   });

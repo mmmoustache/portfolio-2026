@@ -19,13 +19,15 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "check:routes": "node src/scripts/check-required-routes.mjs",
+    "check:links": "node src/scripts/check-internal-links.mjs",
     "verify": "npm run prettier && npm run lint && npm run typecheck && npm run test:run && npm run bundle:budget:ci",
     "prepare": "husky",
     "lh:ci": "node src/scripts/lighthouse.mjs",
     "lh:preview": "astro preview --host 127.0.0.1 --port 4321",
     "lh:local": "npm run build && start-server-and-test lh:preview http://127.0.0.1:4321 \"LH_BASE_URL=http://127.0.0.1:4321 node src/scripts/lighthouse.mjs\"",
     "bundle:budget": "node src/scripts/bundle-budget.mjs",
-    "bundle:budget:ci": "npm run build && npm run bundle:budget"
+    "bundle:budget:ci": "npm run build && npm run bundle:budget && npm run check:routes && npm run check:links"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,astro,json,md,css}": [
@@ -47,6 +49,7 @@
     "@astrojs/check": "^0.9.8",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
+    "@axe-core/playwright": "^4.11.2",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.4.1",

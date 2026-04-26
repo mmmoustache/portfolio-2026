@@ -1,6 +1,6 @@
 ---
 title: 'AI in web development: there and back again'
-description: ''
+description: 'A critical look at AI coding tools, where they help, where they mislead, and why developers still need strong foundations.'
 pubDate: 'November 19 2024'
 listingImage: '../../assets/trees.webp'
 duration: 5
