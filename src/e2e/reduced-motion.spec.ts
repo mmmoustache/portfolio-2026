@@ -1,6 +1,13 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 import { ROUTES } from '@/e2e/helpers/routes';
+
+async function revealCompactBar(page: Page) {
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await page.waitForTimeout(100);
+  await page.evaluate(() => window.scrollTo(0, 380));
+  await page.waitForTimeout(100);
+}
 
 test.describe('Reduced motion', () => {
   test.beforeEach(async ({ page }) => {
@@ -52,7 +59,7 @@ test.describe('Reduced motion', () => {
     test.skip(testInfo.project.name !== 'mobile', 'mobile-only');
 
     await page.goto(ROUTES.home);
-    await page.evaluate(() => window.scrollTo(0, 100));
+    await revealCompactBar(page);
 
     const menuButton = page.getByRole('button', { name: /Open menu/i });
     await expect(menuButton).toBeVisible();
