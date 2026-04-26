@@ -73,9 +73,16 @@ npm run preview
 - `npm run test:e2e` – run Playwright end‑to‑end tests
 - `npm run lh:local` / `npm run lh:ci` – Lighthouse audits
 - `npm run bundle:budget` – enforce JS/CSS size budgets
-- `npm run verify` – full pre‑commit CI approximator (format, lint, typecheck, tests, bundle)
+- `npm run verify` – the fast everyday validation pass (format, lint, typecheck, unit tests, build, bundle, route and link checks)
+- `npm run verify:full` – the slower high-confidence pass for browser behavior and performance (`test:e2e` + Lighthouse)
 
 > Husky is configured via `prepare` script for pre‑commit hooks. `lint-staged` ensures staged files are formatted and linted.
+
+### Verification Workflow
+
+- Use `npm run verify` during normal development. It is intended to stay fast and deterministic enough to run often.
+- Use `npm run verify:full` before pushing, merging, or deploying when you want confidence in the real rendered experience as well as Lighthouse thresholds.
+- `verify` intentionally does not include Lighthouse or browser E2E checks, because those are slower and more environment-sensitive. Keeping them separate makes the normal validation loop cheaper, which makes it more likely to be run consistently.
 
 ## 🗂 Project Structure
 
@@ -129,7 +136,7 @@ Refer to `package.json` for exact versions.
 
 - **Content updates:** add Markdown/MDX files under `src/content/blog` or `pages`. `content.config.ts` controls collection parsing.
 - **Design tokens:** modify JSON in `design-tokens/` and rerun `npm run tokens` to emit updated CSS/TS.
-- **Linting:** commit hooks run `prettier` and `eslint`. You can run `npm run verify` locally to simulate CI.
+- **Linting and verification:** commit hooks run `prettier` and `eslint`. Use `npm run verify` as the normal local gate, and `npm run verify:full` for the final browser/performance pass before shipping.
 - **Adding components:** place `.astro` files in `src/components`, accompanying tests in same directory using `.test.ts`.
 - **Routing:** dynamic routes use `[...slug].astro` for slug handling.
 - **Build environment:** environment variables are defined via Vercel dashboard; local `.env` is ignored (see `.gitignore`).

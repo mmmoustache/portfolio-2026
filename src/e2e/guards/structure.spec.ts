@@ -6,7 +6,9 @@ test.describe('Rendered structure guards', () => {
   test('homepage sections appear in the expected order', async ({ page }) => {
     await page.goto(ROUTES.home);
 
-    const headings = await page.getByRole('heading', { level: 2 }).allTextContents();
+    const headings = (await page.getByRole('heading', { level: 2 }).allTextContents()).map((text) =>
+      text.replace(/\s+\./g, '.').replace(/\s+/g, ' ').trim()
+    );
     expect(headings).toEqual(['About.', 'Work.', 'Blog.']);
   });
 
@@ -14,7 +16,10 @@ test.describe('Rendered structure guards', () => {
     await page.goto(ROUTES.post);
 
     const toc = page.getByRole('navigation', { name: /Contents/i });
+    await toc.locator('summary').click();
+
     const firstLink = toc.getByRole('link').first();
+    await expect(firstLink).toBeVisible();
     const href = await firstLink.getAttribute('href');
 
     expect(href).toMatch(/^#/);
@@ -30,7 +35,14 @@ test.describe('Rendered structure guards', () => {
     await page.goto(ROUTES.post);
 
     const toc = page.getByRole('navigation', { name: /Contents/i });
+    const summary = toc.locator('summary');
+
+    await summary.focus();
+    await expect(summary).toBeFocused();
+    await page.keyboard.press('Enter');
+
     const firstLink = toc.getByRole('link').first();
+    await expect(firstLink).toBeVisible();
     const href = await firstLink.getAttribute('href');
 
     expect(href).toMatch(/^#/);
