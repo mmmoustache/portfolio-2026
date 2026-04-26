@@ -1,6 +1,6 @@
 ---
 title: 'Some tips for effective leadership'
-description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
+description: 'Practical leadership advice for building trust, supporting growth, and creating healthier engineering teams.'
 pubDate: 'Jun 19 2024'
 listingImage: '../../assets/forest.webp'
 duration: 2

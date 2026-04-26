@@ -4,3 +4,5 @@ export const ROUTES = {
   listing: '/blog/',
   post: '/blog/leadership-tips/',
 } as const;
+
+export const ALL_ROUTES = Object.values(ROUTES);

@@ -2,6 +2,9 @@
   "name": "jc",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev --host",
     "build": "npm run tokens && astro build",
@@ -10,7 +13,8 @@
     "typecheck": "astro check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prettier": "prettier . --write",
+    "format": "prettier . --write",
+    "prettier": "prettier . --check",
     "tokens": "node config/style-dictionary.mjs",
     "test": "vitest",
     "test:run": "vitest run",
@@ -19,12 +23,15 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "verify": "npm run prettier && npm run lint && npm run typecheck && npm run test:run && npm run bundle:budget:ci",
+    "verify:full": "npm run test:e2e && npm run lh:local",
+    "check:routes": "node src/scripts/check-required-routes.mjs",
+    "check:links": "node src/scripts/check-internal-links.mjs",
     "prepare": "husky",
     "lh:ci": "node src/scripts/lighthouse.mjs",
     "lh:preview": "astro preview --host 127.0.0.1 --port 4321",
     "lh:local": "npm run build && start-server-and-test lh:preview http://127.0.0.1:4321 \"LH_BASE_URL=http://127.0.0.1:4321 node src/scripts/lighthouse.mjs\"",
     "bundle:budget": "node src/scripts/bundle-budget.mjs",
-    "bundle:budget:ci": "npm run build && npm run bundle:budget"
+    "bundle:budget:ci": "npm run build && npm run bundle:budget && npm run check:routes && npm run check:links"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,astro,json,md,css}": [
@@ -37,15 +44,16 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "@vercel/analytics": "^1.6.1",
-    "astro": "^5.18.0",
-    "lenis": "^1.3.18",
+    "astro": "^6.1.9",
+    "lenis": "^1.3.17",
     "nanostores": "^1.1.1",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.6",
-    "@astrojs/rss": "^4.0.15",
-    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.2",
+    "@axe-core/playwright": "^4.11.2",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.4.1",
@@ -61,13 +69,13 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
-    "lint-staged": "^16.3.1",
+    "lint-staged": "^16.3.3",
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "start-server-and-test": "^2.1.5",
-    "style-dictionary": "^5.1.1",
+    "style-dictionary": "^5.3.3",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   }

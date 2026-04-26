@@ -22,7 +22,7 @@ The site is a static, SEO-friendly Astro project deploying to Vercel. Key featur
 
 ### Prerequisites
 
-- Node.js 20+ (tested on macOS Monterey/vent)
+- Node.js 22.12.0 or newer
 - `npm` (comes with Node) or `pnpm`/`yarn` (if you prefer)
 - Git (to clone the repo)
 
@@ -32,6 +32,9 @@ The site is a static, SEO-friendly Astro project deploying to Vercel. Key featur
 # clone & navigate
 git clone https://github.com/jackcoventry/portfolio-2026.git
 cd portfolio-2026
+
+# use the project Node version
+nvm use
 
 # install dependencies
 npm install
@@ -73,9 +76,16 @@ npm run preview
 - `npm run test:e2e` – run Playwright end‑to‑end tests
 - `npm run lh:local` / `npm run lh:ci` – Lighthouse audits
 - `npm run bundle:budget` – enforce JS/CSS size budgets
-- `npm run verify` – full pre‑commit CI approximator (format, lint, typecheck, tests, bundle)
+- `npm run verify` – the fast everyday validation pass (format, lint, typecheck, unit tests, build, bundle, route and link checks)
+- `npm run verify:full` – the slower high-confidence pass for browser behavior and performance (`test:e2e` + Lighthouse)
 
 > Husky is configured via `prepare` script for pre‑commit hooks. `lint-staged` ensures staged files are formatted and linted.
+
+### Verification Workflow
+
+- Use `npm run verify` during normal development. It is intended to stay fast and deterministic enough to run often.
+- Use `npm run verify:full` before pushing, merging, or deploying when you want confidence in the real rendered experience as well as Lighthouse thresholds.
+- `verify` intentionally does not include Lighthouse or browser E2E checks, because those are slower and more environment-sensitive. Keeping them separate makes the normal validation loop cheaper, which makes it more likely to be run consistently.
 
 ## 🗂 Project Structure
 
@@ -110,7 +120,7 @@ npm run preview
 - **astro** – the static site generator
 - **tailwindcss** & `@tailwindcss/vite` – utility CSS framework with Vite plugin
 - **@vercel/analytics** – analytics injection for Vercel
-- **lenis** – smooth-scrolling library used in multiple components
+- **lenis** – smooth-scrolling library used on the homepage experience
 - **nanostores** – lightweight state management library
 
 ### Dev
@@ -129,7 +139,7 @@ Refer to `package.json` for exact versions.
 
 - **Content updates:** add Markdown/MDX files under `src/content/blog` or `pages`. `content.config.ts` controls collection parsing.
 - **Design tokens:** modify JSON in `design-tokens/` and rerun `npm run tokens` to emit updated CSS/TS.
-- **Linting:** commit hooks run `prettier` and `eslint`. You can run `npm run verify` locally to simulate CI.
+- **Linting and verification:** commit hooks run `prettier` and `eslint`. Use `npm run verify` as the normal local gate, and `npm run verify:full` for the final browser/performance pass before shipping.
 - **Adding components:** place `.astro` files in `src/components`, accompanying tests in same directory using `.test.ts`.
 - **Routing:** dynamic routes use `[...slug].astro` for slug handling.
 - **Build environment:** environment variables are defined via Vercel dashboard; local `.env` is ignored (see `.gitignore`).
@@ -149,7 +159,7 @@ This project currently has **no license file**. Add a `LICENSE` (e.g. [MIT](http
 
 | Requirement         | Notes                     |
 | ------------------- | ------------------------- |
-| Node.js             | >=20 (LTS)                |
+| Node.js             | >=22.12.0                 |
 | npm/yarn/pnpm       | package manager of choice |
 | macOS/Linux/Windows | supported in dev          |
 | Git                 | for version control       |

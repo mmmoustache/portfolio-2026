@@ -1,12 +1,12 @@
 ---
 title: 'Resetting a team culture'
-description: 'Turning a team culture from nothing to something special'
+description: 'How a web engineering practice rebuilt morale, engagement, and team identity after a difficult merger.'
 pubDate: 'Jan 11 2026'
 listingImage: '../../assets/mountains.webp'
 duration: 5
 ---
 
-## In a previous job, following a company merger, two web engineering departments were smashed together from two former companies; two varying sets of personalities, two sets of traditions. The head of the department was from the _other side_, we didn't know much about them but there was high anticipation of the joining of two teams.
+In a previous job, following a company merger, two web engineering departments were smashed together from two former companies; two varying sets of personalities, two sets of traditions. The head of the department was from the _other side_, we didn't know much about them but there was high anticipation of the joining of two teams.
 
 It was clear that it wasn't going to be a smooth transition - I heard rumblings from people I line-managed that they were unhappy with some things they had heard on the grapevine. Primarily, one new requirement was performing a mandatory presentation in front of the entire practice - no exceptions. This troubled a lot of the team, particularly some neurodivergent team members and introverted people who simply can't talk in front of other people. When it was first announced, every one of my reportees directly messaged me with their concerns. Finding something unique to talk about was difficult enough, let alone be judged by other people, some far more experienced than others. It just wasn't going to work.
 

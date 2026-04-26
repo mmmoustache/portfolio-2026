@@ -8,7 +8,7 @@ export interface Props {
   text: string;
 }
 
-const { text, as = 'span', class: className = '', staggerMs = 35 } = Astro.props;
+const { text, as = 'span', class: className = '', staggerMs = 24 } = Astro.props;
 const Tag = as;
 const chars = splitGraphemes(text);
 ---
@@ -32,9 +32,9 @@ const chars = splitGraphemes(text);
 
 <style is:global>
   .text-swap {
-    --stagger: 35ms;
-    --duration: 450ms;
-    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --stagger: 24ms;
+    --duration: 320ms;
+    --ease: var(--motion-ease-text-swap);
   }
 
   .text-swap .top,
@@ -46,7 +46,7 @@ const chars = splitGraphemes(text);
   }
 
   .text-swap .bottom {
-    transform: translateY(110%);
+    transform: translateY(104%);
   }
 
   .text-swap::after {
@@ -56,7 +56,7 @@ const chars = splitGraphemes(text);
     height: 0.2em;
     position: relative;
     top: 0.1em;
-    transition: width ease-in-out 0.25s;
+    transition: width 180ms ease-out;
     width: 0;
   }
 
@@ -70,7 +70,7 @@ const chars = splitGraphemes(text);
 
     .text-swapper:hover .text-swap .top,
     .text-swap:hover .top {
-      transform: translateY(-110%);
+      transform: translateY(-104%);
     }
 
     .text-swapper:hover .text-swap .bottom,

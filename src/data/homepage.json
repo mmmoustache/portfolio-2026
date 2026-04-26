@@ -4,7 +4,7 @@
   },
   "bio": {
     "title": "About",
-    "text": "I'm Jack and I'm passionate about accessible UI, design systems and cross-functional collaboration; I have spent the last 14 years building human-focused digital experiences, including CMS and API integrations, UX development and accessibility. Originally from a background in music production, I'm a big film and music nerd but I also like games, writing, travel, reading and making music. Based in Manchester.",
+    "text": "I'm Jack and I'm passionate about creating accessible UI, design systems and cross-functional collaboration; I have spent the last 14 years building human-focused digital experiences, including CMS and API integrations, UX development and accessibility. Originally from a background in music production, I'm a huge film and music nerd but I also like games, writing, travel, reading and making music. Based in Manchester.",
     "tools": [
       {
         "id": "react",
@@ -45,24 +45,27 @@
     "text": "Some personal projects",
     "items": [
       {
+        "title": "HOAM Design System",
+        "text": "A design system for the coffee brand ",
+        "href": "https://hds.jrc.codes",
+        "github": "https://github.com/jackcoventry/hoam-design-system"
+      },
+      {
+        "title": "Coffee Search",
+        "text": "An AI-powered chatbot for coffee recommendations",
+        "href": "https://coffee.jrc.codes",
+        "github": "https://github.com/jackcoventry/coffee-search"
+      },
+      {
         "title": "Farkle friend",
         "text": "A local farkle multiplayer dice game, made with Next.js and React. Including different game variations and alternative modes.",
-        "href": "/"
-      },
-      {
-        "title": "HOAM",
-        "text": "A design system for the coffee brand HOAM, used in the HOAM e-commerce template",
-        "href": "/"
-      },
-      {
-        "title": "HOAM Store",
-        "text": "A an ecommerce template built for Shopify",
-        "href": "/"
+        "href": "https://farkle.jrc.codes",
+        "github": "https://github.com/jackcoventry/farkle-friend"
       }
     ]
   },
   "blog": {
     "title": "Blog",
-    "text": "Some articles that I wroted"
+    "text": "Some thoughts etc..."
   }
 }

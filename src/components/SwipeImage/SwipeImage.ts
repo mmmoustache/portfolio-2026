@@ -1,4 +1,4 @@
-import { clamp } from '@/utils/clamp';
+import { coerceClampedNumber } from '@/utils/coerceNumber';
 
 type SwipeImageEl = HTMLElement & {
   dataset: DOMStringMap & {
@@ -22,14 +22,17 @@ function buildThresholds(steps = THRESHOLD_STEPS): number[] {
 }
 
 function parseThreshold(value: string | undefined, fallback = DEFAULT_THRESHOLD): number {
-  if (!value) return fallback;
-  const n = Number(value);
-  if (!Number.isFinite(n)) return fallback;
-  return clamp(n, 0, 1);
+  return coerceClampedNumber(value, fallback, { min: 0, max: 1 });
 }
 
 function isSwipeImageEl(node: Element): node is SwipeImageEl {
   return node instanceof HTMLElement && Object.hasOwn(node.dataset, 'swipeImage');
+}
+
+function reveal(el: SwipeImageEl): void {
+  requestAnimationFrame(() => {
+    el.dataset.revealed = 'true';
+  });
 }
 
 function reset(el: SwipeImageEl): void {
@@ -54,9 +57,7 @@ function arm(el: SwipeImageEl, obsMap: WeakMap<SwipeImageEl, IntersectionObserve
         if (!entry.isIntersecting) continue;
 
         if (entry.intersectionRatio >= threshold) {
-          requestAnimationFrame(() => {
-            el.dataset.revealed = 'true';
-          });
+          reveal(el);
           observer.disconnect();
           break;
         }
@@ -83,6 +84,11 @@ function initAll(
 
     if (opts.forceReset || !alreadyInit) {
       reset(node);
+    }
+
+    if (!('IntersectionObserver' in globalThis)) {
+      reveal(node);
+      continue;
     }
 
     arm(node, obsMap);

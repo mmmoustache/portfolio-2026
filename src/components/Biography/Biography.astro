@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 import Portrait from '@/assets/me.webp';
 import BannerImage from '@/assets/ocean.webp';
 import BannerClip from '@/components/BannerClip/BannerClip.astro';
@@ -22,14 +24,13 @@ const { title, text, tools } = Astro.props;
 
 <section class="-mt-9 overflow-hidden">
   <div class="mx-auto flex max-w-6xl">
-    <BannerClip initialInsetPercentage={20} initialScale={1.5}>
-      <img
-        src={BannerImage.src}
+    <BannerClip initialInsetPercentage={18} initialScale={1.34} ease={0.09}>
+      <Image
+        src={BannerImage}
         alt="A landscape photography of an ocean on a sunny day"
-        width="1440"
-        height="720"
         loading="lazy"
-        decoding="async"
+        widths={[720, 1080, 1440]}
+        sizes="(min-width: 1280px) 72rem, 100vw"
       />
     </BannerClip>
   </div>
@@ -42,15 +43,27 @@ const { title, text, tools } = Astro.props;
         <h2 class="font-heading">
           {title}<Dot />
         </h2>
-        <p set:html={text} class="font-body lg:font-title pt-6 text-left" />
+        {text && <p class="font-body lg:font-title pt-6 text-left">{text}</p>}
         <div class="flex flex-col gap-5 py-8">
           <LogoBlock items={tools} />
         </div>
       </div>
       <div class="col-span-1 lg:col-span-1">
         <div class="mx-auto max-w-80 lg:w-full lg:max-w-full">
-          <SwipeImage threshold={0.25}>
-            <img src={Portrait.src} alt="A portrait of Jack Coventry holding a cute koala bear" />
+          <SwipeImage
+            threshold={0.18}
+            delayMs={80}
+            durationMs={900}
+            easing="var(--motion-ease-settle)"
+          >
+            <Image
+              src={Portrait}
+              class="h-auto w-full"
+              alt="Portrait of Jack Coventry holding a koala"
+              loading="lazy"
+              widths={[320, 480, 640, 800, 960, 1130, 1600]}
+              sizes="(min-width: 1024px) 35.3125rem, 20rem"
+            />
           </SwipeImage>
         </div>
       </div>

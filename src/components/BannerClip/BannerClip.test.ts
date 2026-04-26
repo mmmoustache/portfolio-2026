@@ -155,4 +155,20 @@ describe('BannerClip component', () => {
     expect(Number.parseFloat(scale)).toBeLessThan(1.15);
     expect(Number.parseFloat(scale)).toBeGreaterThanOrEqual(1);
   });
+
+  it('does not mark itself initialized when the inner element is missing', () => {
+    setMatchMedia(false);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    document.body.innerHTML = `
+      <section data-banner-clip data-initial-inset="30" data-initial-scale="1.15"></section>
+    `;
+
+    const figure = document.querySelector('section') as HTMLElement;
+
+    BannerClip();
+
+    expect(figure.dataset.hasInitialized).toBeUndefined();
+    expect(warnSpy).toHaveBeenCalled();
+  });
 });

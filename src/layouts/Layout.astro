@@ -2,6 +2,7 @@
 import '@/styles/global.css';
 
 import Analytics from '@vercel/analytics/astro';
+import type { ImageMetadata } from 'astro';
 
 import BaseHead from '@/components/BaseHead/BaseHead.astro';
 import Footer from '@/components/Footer/Footer.astro';
@@ -10,7 +11,29 @@ import ScrollProvider from '@/components/ScrollProvider/ScrollProvider.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts/consts';
 import data from '@/data/navigation.json';
 
-const { id } = Astro.props;
+type Props = {
+  description?: string;
+  enableSmoothScroll?: boolean;
+  id?: string;
+  image?: ImageMetadata;
+  ogType?: 'article' | 'website';
+  publishedTime?: Date;
+  schema?: Record<string, unknown> | Array<Record<string, unknown>>;
+  title?: string;
+  updatedTime?: Date;
+};
+
+const {
+  id,
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  enableSmoothScroll = false,
+  image,
+  ogType,
+  publishedTime,
+  schema,
+  updatedTime,
+} = Astro.props as Props;
 
 const isVercel = Boolean(process.env.VERCEL);
 const isProd = import.meta.env.PROD;
@@ -20,13 +43,21 @@ const enableAnalytics = isProd && isVercel;
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      ogType={ogType}
+      publishedTime={publishedTime}
+      schema={schema}
+      updatedTime={updatedTime}
+    />
   </head>
   <body id="body">
     <MainNavigation items={data.main} />
     <main id="content" tabindex="-1" data-testid="main" data-layout={id}>
       <slot />
-      <ScrollProvider />
+      {enableSmoothScroll && <ScrollProvider />}
     </main>
     <Footer items={data.main} />
     {enableAnalytics && <Analytics />}

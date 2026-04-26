@@ -2,71 +2,7 @@ import { fireEvent } from '@testing-library/dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initMainNav } from '@/components/MainNavigation/MainNavigation';
-
-type MediaQueryListener = (e: MediaQueryListEvent) => void;
-
-function trackEventListeners() {
-  const added: Array<{
-    target: EventTarget;
-    type: string;
-    listener: EventListenerOrEventListenerObject;
-    options?: boolean | AddEventListenerOptions;
-  }> = [];
-
-  const proto = EventTarget.prototype;
-  const originalAdd = proto.addEventListener;
-  const originalRemove = proto.removeEventListener;
-
-  proto.addEventListener = function (
-    this: EventTarget,
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
-  ) {
-    added.push({ target: this, type, listener, options });
-    return originalAdd.call(this, type, listener, options);
-  } as any;
-
-  return {
-    cleanup() {
-      for (let i = added.length - 1; i >= 0; i--) {
-        const { target, type, listener, options } = added[i];
-        originalRemove.call(target, type, listener, options as any);
-      }
-      proto.addEventListener = originalAdd;
-      proto.removeEventListener = originalRemove;
-    },
-  };
-}
-
-function installMatchMedia(initialMatches = false) {
-  let currentMatches = initialMatches;
-  const listeners = new Set<MediaQueryListener>();
-
-  const mql: MediaQueryList = {
-    media: '(min-width: 1024px)',
-    matches: currentMatches,
-    onchange: null,
-    addEventListener: (_type: string, cb: any) => listeners.add(cb),
-    removeEventListener: (_type: string, cb: any) => listeners.delete(cb),
-    addListener: (cb: any) => listeners.add(cb),
-    removeListener: (cb: any) => listeners.delete(cb),
-    dispatchEvent: () => true,
-  } as any;
-
-  const trigger = (nextMatches: boolean) => {
-    currentMatches = nextMatches;
-    (mql as any).matches = nextMatches;
-    const evt = { matches: nextMatches, media: mql.media } as MediaQueryListEvent;
-    for (const cb of listeners) cb(evt);
-  };
-
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn(() => mql)
-  );
-  return { mql, trigger };
-}
+import { installMatchMedia, trackEventListeners } from '@/utils/tests/domMocks';
 
 class FakeIntersectionObserver {
   static instances: FakeIntersectionObserver[] = [];
@@ -82,13 +18,16 @@ class FakeIntersectionObserver {
   }
 
   trigger(entry: Partial<IntersectionObserverEntry>) {
-    this.callback([entry as IntersectionObserverEntry], this as any);
+    this.callback([entry as IntersectionObserverEntry], this as unknown as IntersectionObserver);
   }
 }
 
 function installIntersectionObserver() {
   FakeIntersectionObserver.instances = [];
-  vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver as any);
+  vi.stubGlobal(
+    'IntersectionObserver',
+    FakeIntersectionObserver as unknown as typeof IntersectionObserver
+  );
 }
 
 function installRafImmediate() {
@@ -154,7 +93,7 @@ function setupDom() {
 
   const content = document.getElementById('content') as HTMLElement;
 
-  content.scrollIntoView = vi.fn() as any;
+  content.scrollIntoView = vi.fn() as typeof content.scrollIntoView;
 
   return {
     header: document.getElementById('siteHeader') as HTMLElement,
@@ -200,7 +139,11 @@ describe('initMainNav', () => {
     document.body.innerHTML = `<div></div>`;
 
     expect(() => initMainNav()).not.toThrow();
-    expect(warnSpy).toHaveBeenCalled();
+    if (import.meta.env.DEV) {
+      expect(warnSpy).toHaveBeenCalled();
+    } else {
+      expect(warnSpy).not.toHaveBeenCalled();
+    }
 
     warnSpy.mockRestore();
   });
@@ -348,7 +291,7 @@ describe('initMainNav', () => {
     outside.textContent = 'outside';
     document.body.appendChild(outside);
 
-    const spy = vi.spyOn(document, 'activeElement', 'get').mockReturnValue(outside as any);
+    const spy = vi.spyOn(document, 'activeElement', 'get').mockReturnValue(outside);
 
     const ev = keydown('Tab');
 
@@ -471,25 +414,28 @@ describe('initMainNav', () => {
     fireEvent.click(skip, { bubbles: true });
 
     expect(document.activeElement).toBe(content);
-    expect(content.scrollIntoView as any).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(content.scrollIntoView)).toHaveBeenCalledTimes(1);
   });
 
-  it('desktop observer toggles bar-visible based on sentinel intersection', () => {
+  it('desktop observer shows the compact bar only when scrolling up after the sentinel leaves view', () => {
     const { mobileBar } = setupDom();
     installMatchMedia(true);
 
     const sentinel = document.getElementById('desktopNavSentinel') as HTMLElement;
-    sentinel.getBoundingClientRect = vi.fn(() => ({
-      top: 0,
-      bottom: 1,
-      left: 0,
-      right: 0,
-      width: 0,
-      height: 1,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    })) as any;
+    sentinel.getBoundingClientRect = vi.fn<() => DOMRect>(
+      () =>
+        ({
+          top: 0,
+          bottom: 1,
+          left: 0,
+          right: 0,
+          width: 0,
+          height: 1,
+          x: 0,
+          y: 0,
+          toJSON: () => ({}),
+        }) as DOMRect
+    );
 
     initMainNav();
 
@@ -499,7 +445,14 @@ describe('initMainNav', () => {
     obs.trigger({ isIntersecting: true });
     expect(mobileBar.classList.contains('bar-visible')).toBe(false);
 
+    Object.defineProperty(window, 'scrollY', { value: 500, configurable: true });
+    window.dispatchEvent(new Event('scroll'));
+
     obs.trigger({ isIntersecting: false });
+    expect(mobileBar.classList.contains('bar-visible')).toBe(false);
+
+    Object.defineProperty(window, 'scrollY', { value: 380, configurable: true });
+    window.dispatchEvent(new Event('scroll'));
     expect(mobileBar.classList.contains('bar-visible')).toBe(true);
   });
 });

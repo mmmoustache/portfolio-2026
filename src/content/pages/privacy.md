@@ -1,5 +1,6 @@
 ---
 title: Privacy policy
+description: Privacy policy for jrc.codes, including hosting and analytics details.
 ---
 
 Last updated: 6 March 2026

@@ -1,5 +1,6 @@
 import Lenis from 'lenis';
 
+import { findHashTarget } from '@/utils/dom';
 import { prefersReducedMotion } from '@/utils/prefersReduceMotion';
 
 export type InitScrollProviderOptions = {
@@ -33,8 +34,8 @@ export function initScrollProvider(options: InitScrollProviderOptions = {}) {
     const a = target.closest('a[href^="#"]');
     if (!(a instanceof HTMLAnchorElement)) return;
 
-    const href = a.getAttribute('href');
-    if (!href) return;
+    const href = a.getAttribute('href')?.trim();
+    if (!href || !href.startsWith('#')) return;
 
     if (href === '#') {
       e.preventDefault();
@@ -43,8 +44,17 @@ export function initScrollProvider(options: InitScrollProviderOptions = {}) {
       return;
     }
 
-    const el = document.querySelector(href);
-    if (!(el instanceof HTMLElement)) return;
+    const url = new URL(a.href, window.location.href);
+    if (
+      url.origin !== window.location.origin ||
+      url.pathname !== window.location.pathname ||
+      url.search !== window.location.search
+    ) {
+      return;
+    }
+
+    const el = findHashTarget(href);
+    if (!el) return;
 
     e.preventDefault();
     lenis.scrollTo(el);

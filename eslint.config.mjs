@@ -21,6 +21,20 @@ export default [
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'document',
+          property: 'execCommand',
+          message: 'Use the Clipboard API or an explicit manual-copy UI instead.',
+        },
+      ],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
     },
@@ -31,6 +45,14 @@ export default [
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'document',
+          property: 'execCommand',
+          message: 'Use the Clipboard API or an explicit manual-copy UI instead.',
+        },
+      ],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
     },
@@ -47,11 +69,35 @@ export default [
       },
     },
     plugins: {
+      '@typescript-eslint': tsPlugin,
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'document',
+          property: 'execCommand',
+          message: 'Use the Clipboard API or an explicit manual-copy UI instead.',
+        },
+      ],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+    },
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', 'src/e2e/**/*.ts'],
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {

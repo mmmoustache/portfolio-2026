@@ -1,4 +1,5 @@
 import { dedupe } from '@/utils/dedupe';
+import { isHTMLButtonElement, isHTMLElement, queryOptional, queryRequired } from '@/utils/dom';
 import { getFocusable } from '@/utils/focusTrap';
 
 function isTypingTarget(el: Element | null): boolean {
@@ -26,32 +27,39 @@ type NavEls = {
   panel: HTMLElement;
 };
 
-function queryRequired<T extends Element>(root: ParentNode, selector: string): T {
-  const el = root.querySelector<T>(selector);
-  if (!el) throw new Error(`[MainNav] Missing required element: ${selector}`);
-  return el;
-}
+type InertElement = HTMLElement & {
+  inert?: boolean;
+};
 
-function queryOptional<T extends Element>(root: ParentNode, selector: string): T | null {
-  return root.querySelector<T>(selector);
+function warnMainNav(message: string, detail?: unknown) {
+  if (import.meta.env.DEV) {
+    console.warn(`[MainNav] ${message}`, detail);
+  }
 }
 
 function collectEls(scope: ParentNode): NavEls {
-  const header = queryRequired<HTMLElement>(scope, '#siteHeader');
+  const header = queryRequired(scope, '#siteHeader', isHTMLElement, 'header');
 
   return {
     header,
-    desktopLogo: queryOptional<HTMLElement>(header, '#desktopLogo'),
-    desktopSentinel: queryOptional<HTMLElement>(header, '#desktopNavSentinel'),
+    desktopLogo: queryOptional(header, '#desktopLogo', isHTMLElement),
+    desktopSentinel: queryOptional(header, '#desktopNavSentinel', isHTMLElement),
 
-    mobileBar: queryRequired<HTMLElement>(header, '#mobileBar'),
-    mobileLogo: queryRequired<HTMLElement>(header, '#mobileLogo'),
-    toggle: queryRequired<HTMLButtonElement>(header, '#menuToggle'),
+    mobileBar: queryRequired(header, '#mobileBar', isHTMLElement, 'mobile bar'),
+    mobileLogo: queryRequired(header, '#mobileLogo', isHTMLElement, 'mobile logo'),
+    toggle: queryRequired(header, '#menuToggle', isHTMLButtonElement, 'menu toggle'),
 
-    menu: queryRequired<HTMLElement>(header, '#mobileMenu'),
-    overlay: queryRequired<HTMLElement>(header, '[data-menu-overlay]'),
-    panel: queryRequired<HTMLElement>(header, '[data-menu-panel]'),
+    menu: queryRequired(header, '#mobileMenu', isHTMLElement, 'mobile menu'),
+    overlay: queryRequired(header, '[data-menu-overlay]', isHTMLElement, 'menu overlay'),
+    panel: queryRequired(header, '[data-menu-panel]', isHTMLElement, 'menu panel'),
   };
+}
+
+function setInert(el: Element, shouldBeInert: boolean) {
+  if (!(el instanceof HTMLElement)) return;
+
+  const inertEl = el as InertElement;
+  if ('inert' in inertEl) inertEl.inert = shouldBeInert;
 }
 
 export function initMainNav(scope: ParentNode = document): void {
@@ -59,7 +67,7 @@ export function initMainNav(scope: ParentNode = document): void {
   try {
     els = collectEls(scope);
   } catch (e) {
-    console.warn(e);
+    warnMainNav('Unable to initialize navigation', e);
     return;
   }
 
@@ -68,7 +76,11 @@ export function initMainNav(scope: ParentNode = document): void {
   let isMenuOpen = false;
   let isAtTop = window.scrollY <= 0;
   let isBarVisible = !mqDesktop.matches;
+  let isDesktopSentinelInView = mqDesktop.matches;
   let lastFocused: Element | null = null;
+  let lastScrollY = window.scrollY;
+  let pendingNavigationHref: string | null = null;
+  let pendingNavigationTimer: ReturnType<typeof globalThis.setTimeout> | null = null;
 
   function applyNavOffset() {
     const h = els.mobileBar.offsetHeight || 0;
@@ -81,10 +93,10 @@ export function initMainNav(scope: ParentNode = document): void {
       if (el === els.header) continue;
 
       if (shouldInert) {
-        if ('inert' in el) (el as any).inert = true;
+        setInert(el, true);
         el.setAttribute('aria-hidden', 'true');
       } else {
-        if ('inert' in el) (el as any).inert = false;
+        setInert(el, false);
         el.removeAttribute('aria-hidden');
       }
     }
@@ -109,13 +121,13 @@ export function initMainNav(scope: ParentNode = document): void {
     if (isMenuOpen) shouldBeFocusable = true;
 
     if (shouldBeFocusable) {
-      if ('inert' in els.mobileBar) (els.mobileBar as any).inert = false;
+      setInert(els.mobileBar, false);
       els.mobileBar.removeAttribute('aria-hidden');
 
       els.toggle.removeAttribute('tabindex');
       els.toggle.removeAttribute('aria-hidden');
     } else {
-      if ('inert' in els.mobileBar) (els.mobileBar as any).inert = true;
+      setInert(els.mobileBar, true);
       els.mobileBar.setAttribute('aria-hidden', 'true');
 
       els.toggle.setAttribute('tabindex', '-1');
@@ -131,14 +143,21 @@ export function initMainNav(scope: ParentNode = document): void {
 
     isBarVisible = shouldShow;
 
-    if (mqDesktop.matches) {
-      els.mobileBar.classList.toggle('bar-visible', shouldShow);
-    } else {
-      els.mobileBar.classList.add('bar-visible');
-    }
+    els.mobileBar.classList.toggle('bar-visible', shouldShow);
 
     setBarFocusable(shouldShow || !mqDesktop.matches);
     setLogoVisibility();
+  }
+
+  function updateBarVisibilityFromScroll(scrollingUp: boolean) {
+    if (mqDesktop.matches) {
+      const shouldShow = !isDesktopSentinelInView && scrollingUp;
+      setBarVisible(shouldShow);
+      return;
+    }
+
+    const shouldShow = isAtTop || scrollingUp;
+    setBarVisible(shouldShow);
   }
 
   function lockScroll() {
@@ -156,6 +175,60 @@ export function initMainNav(scope: ParentNode = document): void {
 
   function getTrapScopeFocusable(): HTMLElement[] {
     return dedupe([...getFocusable(els.mobileBar), ...getFocusable(els.menu)]);
+  }
+
+  function clearPendingRouteState() {
+    pendingNavigationHref = null;
+    if (pendingNavigationTimer != null) {
+      globalThis.clearTimeout(pendingNavigationTimer);
+      pendingNavigationTimer = null;
+    }
+
+    els.mobileBar.dataset.routePending = 'false';
+    els.menu.dataset.routePending = 'false';
+    els.menu.removeAttribute('aria-busy');
+
+    const pendingLinks = els.panel.querySelectorAll<HTMLAnchorElement>(
+      'a[data-route-pending="true"]'
+    );
+    pendingLinks.forEach((link) => {
+      delete link.dataset.routePending;
+      delete link.dataset.swapFrozen;
+    });
+  }
+
+  function isDelayedInternalNavigation(link: HTMLAnchorElement, event?: MouseEvent | PointerEvent) {
+    const reduce = globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isModifiedClick = Boolean(
+      event &&
+      (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+    );
+    const isKeyboardLikeActivation = event instanceof MouseEvent ? event.detail === 0 : false;
+
+    if (
+      reduce ||
+      isModifiedClick ||
+      isKeyboardLikeActivation ||
+      link.target === '_blank' ||
+      link.hasAttribute('download')
+    ) {
+      return false;
+    }
+
+    let url: URL;
+    try {
+      url = new URL(link.href, window.location.href);
+    } catch {
+      return false;
+    }
+
+    const isSameOrigin = url.origin === window.location.origin;
+    const isSamePageHashOnly =
+      url.pathname === window.location.pathname &&
+      url.search === window.location.search &&
+      url.hash.length > 0;
+
+    return isSameOrigin && !isSamePageHashOnly;
   }
 
   function trapFocus(e: KeyboardEvent) {
@@ -196,6 +269,8 @@ export function initMainNav(scope: ParentNode = document): void {
   }
 
   function openMenu() {
+    clearPendingRouteState();
+
     if (isMenuOpen) {
       els.toggle.focus();
       return;
@@ -228,6 +303,8 @@ export function initMainNav(scope: ParentNode = document): void {
   function closeMenu() {
     if (!isMenuOpen) return;
     isMenuOpen = false;
+
+    clearPendingRouteState();
 
     els.mobileBar.dataset.menuOpen = 'false';
     els.toggle.setAttribute('aria-expanded', 'false');
@@ -268,12 +345,69 @@ export function initMainNav(scope: ParentNode = document): void {
   function onPanelClick(e: MouseEvent) {
     const target = e.target as HTMLElement | null;
     const link = target?.closest?.('a');
-    if (link) closeMenu();
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    if (!isDelayedInternalNavigation(link, e)) {
+      closeMenu();
+      return;
+    }
+
+    const url = new URL(link.href, window.location.href);
+
+    e.preventDefault();
+
+    if (pendingNavigationHref) return;
+    pendingNavigationHref = url.toString();
+    link.dataset.routePending = 'true';
+
+    els.mobileBar.dataset.routePending = 'true';
+    els.menu.dataset.routePending = 'true';
+    els.menu.setAttribute('aria-busy', 'true');
+    els.toggle.setAttribute('aria-expanded', 'false');
+
+    document.removeEventListener('keydown', onMenuKeydown, true);
+
+    pendingNavigationTimer = globalThis.setTimeout(() => {
+      window.location.assign(url.toString());
+    }, 180);
+  }
+
+  function onPanelPointerDown(e: PointerEvent) {
+    const target = e.target as HTMLElement | null;
+    const link = target?.closest?.('a');
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    if (!isDelayedInternalNavigation(link, e)) return;
+
+    const frozenLinks = els.panel.querySelectorAll<HTMLAnchorElement>('a[data-swap-frozen="true"]');
+    frozenLinks.forEach((item) => {
+      if (item !== link) delete item.dataset.swapFrozen;
+    });
+
+    link.dataset.swapFrozen = 'true';
+  }
+
+  function clearFrozenLinks() {
+    const frozenLinks = els.panel.querySelectorAll<HTMLAnchorElement>('a[data-swap-frozen="true"]');
+    frozenLinks.forEach((link) => {
+      delete link.dataset.swapFrozen;
+    });
+  }
+
+  function onPanelPointerCancel() {
+    if (pendingNavigationHref) return;
+    clearFrozenLinks();
   }
 
   function updateAtTop() {
-    isAtTop = window.scrollY <= 0;
+    const nextScrollY = window.scrollY;
+    const scrollingUp = nextScrollY < lastScrollY;
+
+    isAtTop = nextScrollY <= 0;
     els.mobileBar.dataset.atTop = String(isAtTop);
+    updateBarVisibilityFromScroll(scrollingUp);
+
+    lastScrollY = nextScrollY;
     setLogoVisibility();
   }
 
@@ -302,14 +436,15 @@ export function initMainNav(scope: ParentNode = document): void {
 
       io = new IntersectionObserver((entries) => {
         const entry = entries[0];
-        setBarVisible(!entry.isIntersecting);
+        isDesktopSentinelInView = entry.isIntersecting;
+        updateBarVisibilityFromScroll(window.scrollY < lastScrollY);
       });
 
       io.observe(els.desktopSentinel);
 
       const rect = els.desktopSentinel.getBoundingClientRect();
-      const sentinelInView = rect.top < window.innerHeight && rect.bottom >= 0;
-      setBarVisible(!sentinelInView);
+      isDesktopSentinelInView = rect.top < window.innerHeight && rect.bottom >= 0;
+      updateBarVisibilityFromScroll(window.scrollY < lastScrollY);
     };
 
     mqDesktop.addEventListener('change', apply);
@@ -371,5 +506,7 @@ export function initMainNav(scope: ParentNode = document): void {
   document.addEventListener('click', skipToContent);
 
   els.overlay.addEventListener('click', onOverlayClick);
+  els.panel.addEventListener('pointerdown', onPanelPointerDown);
+  els.panel.addEventListener('pointercancel', onPanelPointerCancel);
   els.panel.addEventListener('click', onPanelClick);
 }
